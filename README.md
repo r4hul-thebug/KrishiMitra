@@ -1,6 +1,6 @@
-# 🌱 KrishiMitraaz — Smart Crop Advisory System (SIH25010)
+# 🌱 KrishiMitraaz — Smart Crop Advisory System
 
-> **An AI-powered, voice-first Smart Crop Advisory System built for small and marginal farmers.** Features a real-time weather-aware advisory engine, NDVI satellite analysis, multi-year yield tracking, and a professional government-style dashboard.
+> **An AI-powered, full-stack web platform providing real-time, weather-aware crop advisory and financial projections for small & marginal farmers.** Features a professional government-style dashboard, NDVI satellite analysis, multi-year yield tracking, and voice-ready summary generation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 

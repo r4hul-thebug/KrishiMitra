@@ -1,6 +1,6 @@
 # KrishiMitraaz — Scope, Roadmap & Strategy
 
-**Problem (SIH25010):** Smart Crop Advisory System for small & marginal farmers.  
+**Goal:** Smart Crop Advisory System for small & marginal farmers.  
 **Target user:** ~1-acre farmer, cheap/feature phone, weak network, low literacy.
 
 Every scope decision below serves *that* person: **reach + trust** over feature count.
