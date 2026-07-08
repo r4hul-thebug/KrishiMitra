@@ -15,17 +15,32 @@ const STORE_PATH = join(__dirname, 'store.json');
 
 const empty = () => ({ farmers: [] });
 
+let memCache = null;
+
 async function read() {
-  if (!existsSync(STORE_PATH)) return empty();
+  if (memCache) return memCache;
+  if (!existsSync(STORE_PATH)) {
+    memCache = empty();
+    return memCache;
+  }
   try {
-    return JSON.parse(await readFile(STORE_PATH, 'utf8'));
+    memCache = JSON.parse(await readFile(STORE_PATH, 'utf8'));
+    return memCache;
   } catch {
-    return empty();
+    memCache = empty();
+    return memCache;
   }
 }
 
 async function write(data) {
-  await writeFile(STORE_PATH, JSON.stringify(data, null, 2), 'utf8');
+  memCache = data;
+  try {
+    // Write to /tmp/ in production (e.g. Vercel serverless)
+    const writePath = process.env.NODE_ENV === 'production' ? '/tmp/store.json' : STORE_PATH;
+    await writeFile(writePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('[store] Could not write to disk, using in-memory only.', err.message);
+  }
 }
 
 // --- Farmer repository -----------------------------------------------------
