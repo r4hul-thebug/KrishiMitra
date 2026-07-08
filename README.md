@@ -11,13 +11,13 @@
 | Feature | Description |
 |---|---|
 | 🏛️ **Government Dashboard** | Professional NIC-style enterprise UI — solid theme, high contrast, accessible |
-| 🌾 **AI Advisory Engine** | Weather-aware, stage-specific crop advice with explainable reasoning (`basis` field) |
+| 🌾 **AI Advisory Engine** | Weather-aware, stage-specific crop advice for **39 major Indian crops** |
 | 📡 **Satellite Integration** | NDVI crop health analysis via ISRO Bhuvan API |
 | 🎤 **Voice-Ready Summaries** | Structured output designed for Bhashini TTS (22 Indian languages) |
 | 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **AI Chatbot** | Grounded agricultural assistant for farming questions |
+| 🤖 **Advanced AI Chatbot** | Highly-grounded NLP assistant capable of answering complex agronomic queries |
 | 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID |
 
 ---
@@ -120,6 +120,30 @@ DATAGOV_API_KEY=your_key
 ```
 
 All providers have mock fallbacks — **no API keys needed to run locally**.
+
+---
+
+## 🌍 Deployment
+
+KrishiMitraaz is optimized for seamless deployment across modern cloud platforms.
+
+### Backend (Render / Heroku)
+1. Push your code to GitHub.
+2. Create a new Web Service on Render and link your repository.
+3. Set the Root Directory to the base folder (or leave blank).
+4. Build Command: `npm install`
+5. Start Command: `node src/server.js`
+6. Add your environment variables (`WEATHER_PROVIDER`, `OPENWEATHER_API_KEY`, etc.).
+7. Once deployed, copy the backend URL (e.g., `https://krishimitra-backend.onrender.com`).
+
+### Frontend (Vercel / Netlify)
+1. Go to Vercel and import your GitHub repository.
+2. Set the **Framework Preset** to `Vite`.
+3. Set the **Root Directory** to `frontend`.
+4. In Environment Variables, add `VITE_API_URL` and set it to your Render backend URL (e.g., `https://krishimitra-backend.onrender.com/api`).
+5. Click **Deploy**. 
+
+*Note: If you update `VITE_API_URL` after deployment, you must manually trigger a Redeploy in the Vercel dashboard for the changes to take effect.*
 
 ---
 
