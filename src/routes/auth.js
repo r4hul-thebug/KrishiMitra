@@ -61,3 +61,4 @@ auth.post('/login', async (req, res) => {
   const { password: _, ...farmerData } = farmer;
   res.json({ token, farmer: farmerData });
 });
+

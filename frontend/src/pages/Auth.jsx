@@ -90,7 +90,7 @@ export default function AuthScreen({ setToken }) {
 
   return (
     <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '90vh' }}>
-      <div className="glass-card animate-fade-in-up" style={{ maxWidth: '540px', width: '100%', padding: '2.5rem' }}>
+        <div className="glass-card animate-fade-in-up" style={{ maxWidth: '540px', width: '100%', padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <ShieldCheck size={48} color="var(--primary-green)" style={{ marginBottom: '1rem' }} />
           <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>KrishiMitraaz</h1>
