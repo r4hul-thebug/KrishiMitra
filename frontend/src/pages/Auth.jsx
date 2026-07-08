@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { User, Lock, ArrowRight, ShieldCheck, Map, Calendar, TrendingUp, Plus } from 'lucide-react';
+import { User, Lock, ArrowRight, ShieldCheck, Map, Calendar, TrendingUp, Plus, Eye, EyeOff } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
 
@@ -11,6 +11,7 @@ export default function AuthScreen({ setToken }) {
   const [isLogin, setIsLogin] = useState(true);
   const [officialId, setOfficialId] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [crop, setCrop] = useState('wheat');
   const [landAcres, setLandAcres] = useState('');
@@ -154,13 +155,20 @@ export default function AuthScreen({ setToken }) {
             <div style={{ position: 'relative' }}>
               <Lock size={20} color="var(--text-muted)" style={{ position: 'absolute', top: '12px', left: '12px' }} />
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
-                style={{...inputStyle, paddingLeft: '40px'}}
+                style={{...inputStyle, paddingLeft: '40px', paddingRight: '40px'}}
                 placeholder="••••••••"
               />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                {showPassword ? <EyeOff size={20} color="var(--text-muted)" /> : <Eye size={20} color="var(--text-muted)" />}
+              </button>
             </div>
           </div>
 
