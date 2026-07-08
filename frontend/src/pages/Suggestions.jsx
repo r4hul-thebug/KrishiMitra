@@ -15,7 +15,7 @@ export default function Suggestions() {
     const fetchSuitability = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_URL}/farmers/${farmerId}/suggestions`);
+        const res = await axios.get(`${API_URL}/farmers/${farmerId}/suitability`);
         setSuggestions(res.data.suggestions);
       } catch {
         setError('Failed to fetch crop suggestions. Ensure location is enabled on the Dashboard first.');
