@@ -1,6 +1,6 @@
 // Seed a couple of demo farmers so you have something to hit immediately.
 // Run: npm run seed
-import { replaceAll } from './store.js';
+import { replaceAll, connectDB } from './store.js';
 import { randomUUID } from 'node:crypto';
 
 // Sowing dates are set relative to "today" so demo farmers are always mid-season.
@@ -13,6 +13,8 @@ function daysAgo(n) {
 const farmers = [
   {
     id: randomUUID(),
+    officialId: 'FARMER-001',
+    password: 'hashed_password_placeholder',
     createdAt: new Date().toISOString(),
     name: 'Ramlal',
     phone: '+91900000001',
@@ -26,6 +28,8 @@ const farmers = [
   },
   {
     id: randomUUID(),
+    officialId: 'FARMER-002',
+    password: 'hashed_password_placeholder',
     createdAt: new Date().toISOString(),
     name: 'Sita Devi',
     phone: '+91900000002',
@@ -39,7 +43,9 @@ const farmers = [
   },
 ];
 
+await connectDB(process.env.DATABASE_URL);
 await replaceAll({ farmers });
 console.log(`Seeded ${farmers.length} farmers:`);
 for (const f of farmers) console.log(`  ${f.id}  ${f.name} (${f.crop})`);
 console.log('\nTry:  curl http://localhost:3000/api/farmers/' + farmers[0].id + '/advisory?speech=1');
+process.exit(0);

@@ -24,7 +24,7 @@
 
 ## 🚀 Quick Start
 
-**Zero external database setup required.** The backend uses a lightweight JSON store, and the frontend is a blazing-fast React Vite app.
+**Zero external database setup required for local demo testing.** The backend uses a PostgreSQL database natively (via `pg`), and the frontend is a blazing-fast React Vite app.
 
 ### 1. Backend API
 
@@ -72,7 +72,7 @@ krishimitraaz/
 │   │   ├── satellite.js       # NDVI satellite data (mock / Bhuvan)
 │   │   └── market.js          # Market price provider (mock / Agmarknet)
 │   └── db/
-│       ├── store.js           # JSON file-based data store
+│       ├── store.js           # PostgreSQL persistence layer
 │       └── seed.js            # Demo data seeder
 ├── frontend/
 │   ├── src/
@@ -130,10 +130,11 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 ### Backend (Render / Heroku)
 1. Push your code to GitHub.
 2. Create a new Web Service on Render and link your repository.
+3. In Render, create a free **PostgreSQL Database** and copy the internal or external Connection String.
 3. Set the Root Directory to the base folder (or leave blank).
 4. Build Command: `npm install`
-5. Start Command: `node src/server.js`
-6. Add your environment variables (`WEATHER_PROVIDER`, `OPENWEATHER_API_KEY`, etc.).
+5. Start Command: `node --env-file=.env src/server.js` (or add `DATABASE_URL` in Render Environment variables and run `node src/server.js`)
+6. Add your environment variables (`DATABASE_URL`, `WEATHER_PROVIDER`, etc.).
 7. Once deployed, copy the backend URL (e.g., `https://krishimitra-backend.onrender.com`).
 
 ### Frontend (Vercel / Netlify)
@@ -152,7 +153,7 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 | Layer | Technology |
 |---|---|
 | Frontend | React 19, Vite 8, React Router 7 |
-| Backend | Node.js, Express 4 |
+| Backend | Node.js, Express 4, PostgreSQL (pg) |
 | Auth | JWT (jsonwebtoken + bcryptjs) |
 | Icons | Lucide React |
 | Linting | Oxlint |

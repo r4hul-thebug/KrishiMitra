@@ -1,86 +1,87 @@
-// Tiny JSON-file "database" with a repository-style API.
-//
-// WHY: a solo builder should not have to install PostgreSQL to run Phase 1.
-// This module is the ONLY place that knows how data is persisted. When you
-// move to Postgres + PostGIS + pgvector (recommended for Phase 2), you
-// reimplement these same functions and nothing else in the app changes.
-import { readFile, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import pg from 'pg';
 import { randomUUID } from 'node:crypto';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const STORE_PATH = join(__dirname, 'store.json');
+const { Pool } = pg;
+let pool;
 
-const empty = () => ({ farmers: [] });
-
-let memCache = null;
-
-async function read() {
-  if (memCache) return memCache;
-  if (!existsSync(STORE_PATH)) {
-    memCache = empty();
-    return memCache;
+export async function connectDB(uri) {
+  if (!uri) {
+    console.error('======================================================');
+    console.error('FATAL ERROR: DATABASE_URL environment variable is missing.');
+    console.error('Please add your connection string to your .env file.');
+    console.error('======================================================');
+    throw new Error('DATABASE_URL is required to run the server.');
   }
-  try {
-    memCache = JSON.parse(await readFile(STORE_PATH, 'utf8'));
-    return memCache;
-  } catch {
-    memCache = empty();
-    return memCache;
-  }
-}
 
-async function write(data) {
-  memCache = data;
+  pool = new Pool({
+    connectionString: uri,
+    ssl: { rejectUnauthorized: false } // Required by Neon and most cloud providers
+  });
+
   try {
-    // Write to /tmp/ in production (e.g. Vercel serverless)
-    const writePath = process.env.NODE_ENV === 'production' ? '/tmp/store.json' : STORE_PATH;
-    await writeFile(writePath, JSON.stringify(data, null, 2), 'utf8');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS farmers (
+        id VARCHAR PRIMARY KEY,
+        official_id VARCHAR UNIQUE NOT NULL,
+        data JSONB NOT NULL
+      );
+    `);
+    console.log('[store] Connected to PostgreSQL and verified schema.');
   } catch (err) {
-    console.warn('[store] Could not write to disk, using in-memory only.', err.message);
+    console.error('[store] Failed to initialize PostgreSQL:', err.message);
+    throw err;
   }
 }
-
-// --- Farmer repository -----------------------------------------------------
 
 export async function listFarmers() {
-  const db = await read();
-  return db.farmers;
+  const res = await pool.query('SELECT data FROM farmers');
+  return res.rows.map(r => r.data);
 }
 
 export async function getFarmer(id) {
-  const db = await read();
-  return db.farmers.find((f) => f.id === id) || null;
+  const res = await pool.query('SELECT data FROM farmers WHERE id = $1', [id]);
+  return res.rows[0]?.data || null;
 }
 
 export async function getFarmerByOfficialId(officialId) {
-  const db = await read();
-  return db.farmers.find((f) => f.officialId === officialId) || null;
+  const res = await pool.query('SELECT data FROM farmers WHERE official_id = $1', [officialId]);
+  return res.rows[0]?.data || null;
 }
 
 export async function createFarmer(input) {
-  const db = await read();
   const farmer = {
     id: randomUUID(),
     createdAt: new Date().toISOString(),
     ...input,
   };
-  db.farmers.push(farmer);
-  await write(db);
+  
+  await pool.query(
+    'INSERT INTO farmers (id, official_id, data) VALUES ($1, $2, $3)',
+    [farmer.id, farmer.officialId, farmer]
+  );
+  
   return farmer;
 }
 
 export async function updateFarmer(id, patch) {
-  const db = await read();
-  const idx = db.farmers.findIndex((f) => f.id === id);
-  if (idx === -1) return null;
-  db.farmers[idx] = { ...db.farmers[idx], ...patch, id };
-  await write(db);
-  return db.farmers[idx];
+  // Postgres JSONB concatenation elegantly merges the existing JSON object with the patch object
+  const res = await pool.query(
+    'UPDATE farmers SET data = data || $1::jsonb WHERE id = $2 RETURNING data',
+    [JSON.stringify(patch), id]
+  );
+  
+  if (res.rowCount === 0) return null;
+  return res.rows[0].data;
 }
 
 export async function replaceAll(data) {
-  await write({ ...empty(), ...data });
+  if (data.farmers) {
+    await pool.query('DELETE FROM farmers');
+    for (const farmer of data.farmers) {
+      await pool.query(
+        'INSERT INTO farmers (id, official_id, data) VALUES ($1, $2, $3)',
+        [farmer.id, farmer.officialId, farmer]
+      );
+    }
+  }
 }

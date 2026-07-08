@@ -6,6 +6,7 @@ import { farmers } from './routes/farmers.js';
 import { reference } from './routes/reference.js';
 import { auth } from './routes/auth.js';
 import { chat } from './routes/chat.js';
+import { connectDB } from './db/store.js';
 
 const app = express();
 app.use(cors());
@@ -50,7 +51,12 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'internal error', detail: err.message });
 });
 
-app.listen(config.port, () => {
-  console.log(`\n🌱 KrishiMitraaz API running on http://localhost:${config.port}`);
-  console.log(`   Try:  curl http://localhost:${config.port}/api/crops\n`);
-});
+async function start() {
+  await connectDB(process.env.DATABASE_URL);
+  app.listen(config.port, () => {
+    console.log(`\n🌱 KrishiMitraaz API running on http://localhost:${config.port}`);
+    console.log(`   Try:  curl http://localhost:${config.port}/api/crops\n`);
+  });
+}
+
+start();
