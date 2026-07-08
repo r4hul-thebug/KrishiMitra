@@ -1,0 +1,27 @@
+{
+  "name": "krishimitraaz",
+  "version": "0.1.0",
+  "description": "Smart Crop Advisory System for small & marginal farmers (SIH25010). Phase 1: voice-ready advisory spine.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "agriculture",
+    "advisory",
+    "farmers",
+    "sih2025",
+    "krishimitraaz"
+  ],
+  "author": "KrishiMitraaz",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

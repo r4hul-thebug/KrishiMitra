@@ -1,0 +1,179 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Leaf, Droplets, Thermometer, ShieldAlert, Satellite, RefreshCw, Volume2, AlertTriangle } from 'lucide-react';
+import '../index.css';
+import { API_URL } from '../config';
+
+const iconMap = {
+  'Hold irrigation': <Droplets size={24} color="white" />,
+  'Irrigation schedule': <Droplets size={24} color="white" />,
+  'Heat stress': <Thermometer size={24} color="white" />,
+  'Cold stress': <Thermometer size={24} color="white" />,
+  'Disease': <ShieldAlert size={24} color="white" />,
+  'Satellite': <Satellite size={24} color="white" />,
+  'Stage': <Leaf size={24} color="white" />,
+  'Nutrient': <Leaf size={24} color="white" />,
+  'Rotation': <RefreshCw size={24} color="white" />
+};
+
+function getIconForTitle(title) {
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (title.includes(key)) return icon;
+  }
+  return <Leaf size={24} color="white" />;
+}
+
+export default function Dashboard() {
+  const [advisory, setAdvisory] = useState(null);
+  const [threats, setThreats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        
+        const [advisoryRes, threatsRes] = await Promise.all([
+          axios.get(`${API_URL}/farmers/${farmerId}/advisory?speech=1`),
+          axios.get(`${API_URL}/farmers/${farmerId}/threats`)
+        ]);
+        
+        setAdvisory(advisoryRes.data);
+        setThreats(threatsRes.data.threats || []);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (farmerId) fetchDashboardData();
+  }, [farmerId]);
+
+  if (loading) {
+    return (
+      <div className="container loading-container">
+        <div className="spinner"></div>
+        <h2 className="animate-fade-in-up">Gathering Field Data...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container loading-container">
+        <ShieldAlert size={64} color="var(--accent-urgent)" />
+        <h2 style={{marginTop: '1rem', color: 'var(--accent-urgent)'}}>Connection Error</h2>
+        <p style={{marginBottom: '2rem'}}>{error}</p>
+        <button onClick={fetchDashboardData} className="btn-primary">Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      {/* Hero Header */}
+      <div className="header-banner animate-fade-in-down">
+        <h1>Welcome Back</h1>
+        <p>Live AI & Satellite powered advisory for your <strong>{advisory?.cropName?.en || 'Crop'}</strong> field at <strong>{advisory?.stage?.name || 'Unknown Stage'}</strong>.</p>
+        <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.2, transform: 'scale(3)' }}>
+          <Leaf size={120} />
+        </div>
+      </div>
+
+      {/* Voice Summary Segment */}
+      {advisory?.speech && (
+        <div className="voice-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+          <div className="voice-icon">
+            <Volume2 size={28} />
+          </div>
+          <div>
+            <h2 style={{color: 'var(--primary-green-dark)', marginBottom: '8px'}}>Voice Assistant Summary</h2>
+            <div style={{fontSize: '1.125rem', lineHeight: 1.8, color: 'var(--text-main)'}}>
+              {advisory.speech.split('\n').map((line, idx) => (
+                <div 
+                  key={idx} 
+                  style={line.match(/^\d+\./) ? { paddingLeft: '24px', textIndent: '-24px', marginBottom: '4px' } : { marginBottom: '12px', fontWeight: 'bold' }}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real-Time Threat Center */}
+      {threats.length > 0 && (
+        <div className="animate-fade-in-up" style={{ marginBottom: '2.5rem', animationDelay: '0.15s' }}>
+          <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--accent-urgent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={28} /> Real-Time Threat Center
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {threats.map((t, idx) => (
+              <div key={idx} className="glass-card" style={{ borderLeft: '4px solid var(--accent-urgent)', background: 'var(--accent-urgent-bg)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+                  <ShieldAlert color="var(--accent-urgent)" size={24} />
+                  <h3 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--accent-urgent)' }}>{t.title}</h3>
+                </div>
+                <p style={{ color: 'var(--text-main)', fontSize: '1.05rem', lineHeight: '1.5' }}>{t.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <h2 style={{fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--primary-green-dark)'}}>
+        Detailed Insights
+      </h2>
+
+      {/* Insights Grid */}
+      <div className="dashboard-grid">
+        {advisory?.items?.map((item, index) => {
+          let severityClass = 'severity-info';
+          let iconBg = 'var(--primary-green-light)';
+          
+          if (item.severity === 'urgent') {
+            severityClass = 'severity-urgent';
+            iconBg = 'var(--accent-urgent)';
+          } else if (item.severity === 'important') {
+            severityClass = 'severity-important';
+            iconBg = 'var(--accent-important)';
+          }
+
+          return (
+            <div 
+              key={index} 
+              className={`glass-card animate-fade-in-up ${severityClass}`}
+              style={{animationDelay: `${0.15 + (index * 0.05)}s`}}
+            >
+              <div className="flex items-center gap-4" style={{marginBottom: '1rem'}}>
+                <div style={{
+                  background: iconBg, 
+                  padding: '12px', 
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }}>
+                  {getIconForTitle(item.title)}
+                </div>
+                <h3 style={{fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-main)'}}>
+                  {item.title}
+                </h3>
+              </div>
+              <p style={{color: 'var(--text-muted)', fontSize: '1rem'}}>
+                {item.message}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
