@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { User, Lock, ArrowRight, ShieldCheck, Map, Calendar, TrendingUp, Plus } from 'lucide-react';
@@ -21,6 +21,22 @@ export default function AuthScreen({ setToken }) {
   const [yieldHistoryList, setYieldHistoryList] = useState([
     { year: new Date().getFullYear() - 1, crop: '', yield: '', unit: 'Quintals' }
   ]);
+  
+  const [availableCrops, setAvailableCrops] = useState([]);
+
+  useEffect(() => {
+    const fetchCrops = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/crops`);
+        const sortedCrops = res.data.sort((a, b) => a.name.en.localeCompare(b.name.en));
+        setAvailableCrops(sortedCrops);
+        if (sortedCrops.length > 0) setCrop(sortedCrops[0].id);
+      } catch (err) {
+        console.error("Failed to load crops", err);
+      }
+    };
+    fetchCrops();
+  }, []);
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -154,14 +170,13 @@ export default function AuthScreen({ setToken }) {
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Primary Crop</label>
                   <select value={crop} onChange={(e) => setCrop(e.target.value)} style={inputStyle}>
-                    <option value="wheat">Wheat</option>
-                    <option value="rice">Rice</option>
-                    <option value="maize">Maize</option>
-                    <option value="cotton">Cotton</option>
-                    <option value="sugarcane">Sugarcane</option>
-                    <option value="mustard">Mustard</option>
-                    <option value="soybean">Soybean</option>
-                    <option value="groundnut">Groundnut</option>
+                    {availableCrops.length > 0 ? (
+                      availableCrops.map(c => (
+                        <option key={c.id} value={c.id}>{c.name.en}</option>
+                      ))
+                    ) : (
+                      <option value="wheat">Wheat</option>
+                    )}
                   </select>
                 </div>
                 <div>

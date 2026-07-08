@@ -60,7 +60,7 @@ test('fertilizer reminder scales with land size', async () => {
 });
 
 test('unknown crop degrades gracefully', async () => {
-  const adv = await buildAdvisory({ id: 'x', crop: 'banana', location: { lat: 28, lon: 77 } }, dry5);
+  const adv = await buildAdvisory({ id: 'x', crop: 'dragonfruit', location: { lat: 28, lon: 77 } }, dry5);
   assert.equal(adv.items.length, 1);
   assert.match(adv.items[0].message, /not in the knowledge base/);
 });
