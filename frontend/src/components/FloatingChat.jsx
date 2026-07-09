@@ -13,8 +13,24 @@ export default function FloatingChat() {
   const [loading, setLoading] = useState(false);
   const [mediaAttached, setMediaAttached] = useState(false);
   const endRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
+
+  const handleAttachClick = () => {
+    if (mediaAttached) {
+      setMediaAttached(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setMediaAttached(true);
+    }
+  };
 
   useEffect(() => {
     if (endRef.current) {
@@ -174,9 +190,16 @@ export default function FloatingChat() {
             alignItems: 'center',
             gap: '8px'
           }}>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              style={{ display: 'none' }} 
+              accept="image/*" 
+            />
             <button 
               type="button" 
-              onClick={() => setMediaAttached(!mediaAttached)}
+              onClick={handleAttachClick}
               style={{
                 background: mediaAttached ? 'var(--primary-green-light)' : 'transparent',
                 color: mediaAttached ? 'white' : 'var(--text-muted)',
@@ -186,7 +209,7 @@ export default function FloatingChat() {
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
-              title="Attach media for diagnosis"
+              title={mediaAttached ? "Remove attached media" : "Attach media for diagnosis"}
             >
               <Paperclip size={20} />
             </button>
