@@ -164,7 +164,9 @@ export default function AuthScreen({ setToken }) {
               />
               <button 
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onMouseLeave={() => setShowPassword(false)}
                 style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
               >
                 {showPassword ? <EyeOff size={20} color="var(--text-muted)" /> : <Eye size={20} color="var(--text-muted)" />}

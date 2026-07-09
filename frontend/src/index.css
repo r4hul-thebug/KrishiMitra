@@ -320,3 +320,9 @@ p {
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.95);
 }
+
+/* Hide the native eye icon in Edge/IE for password fields to avoid double eyes */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
