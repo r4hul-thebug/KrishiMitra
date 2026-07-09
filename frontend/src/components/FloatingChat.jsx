@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { MessageCircle, X, Send, Paperclip, Bot, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, X, Send, Paperclip, Bot } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
 
@@ -11,15 +11,17 @@ export default function FloatingChat() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [mediaAttached, setMediaAttached] = useState(false);
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
 
   const handleAttachClick = () => {
-    if (mediaAttached) {
-      setMediaAttached(false);
+    if (attachedFile) {
+      setAttachedFile(null);
+      setPreviewUrl('');
       if (fileInputRef.current) fileInputRef.current.value = '';
     } else {
       fileInputRef.current?.click();
@@ -28,7 +30,9 @@ export default function FloatingChat() {
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setMediaAttached(true);
+      const file = e.target.files[0];
+      setAttachedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -36,18 +40,21 @@ export default function FloatingChat() {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, attachedFile]);
 
   const handleSend = async (e) => {
     e?.preventDefault();
-    if (!input.trim() && !mediaAttached) return;
+    if (!input.trim() && !attachedFile) return;
 
     const userText = input.trim();
-    const hasMedia = mediaAttached;
+    const hasMedia = !!attachedFile;
+    const currentPreviewUrl = previewUrl;
 
-    setMessages(prev => [...prev, { role: 'user', text: userText, media: hasMedia }]);
+    setMessages(prev => [...prev, { role: 'user', text: userText, mediaUrl: currentPreviewUrl }]);
     setInput('');
-    setMediaAttached(false);
+    setAttachedFile(null);
+    setPreviewUrl('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setLoading(true);
 
     try {
@@ -159,9 +166,9 @@ export default function FloatingChat() {
                   fontSize: '0.95rem',
                   lineHeight: '1.4'
                 }}>
-                  {msg.media && (
-                    <div style={{ marginBottom: '8px', padding: '8px', background: 'rgba(0,0,0,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-                      <CheckCircle2 size={16} /> Image attached
+                  {msg.mediaUrl && (
+                    <div style={{ marginBottom: '8px', padding: '4px', background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+                      <img src={msg.mediaUrl} alt="Attached" style={{ width: '100%', borderRadius: '4px', display: 'block' }} />
                     </div>
                   )}
                   {msg.role === 'ai' ? (
@@ -201,33 +208,48 @@ export default function FloatingChat() {
               type="button" 
               onClick={handleAttachClick}
               style={{
-                background: mediaAttached ? 'var(--primary-green-light)' : 'transparent',
-                color: mediaAttached ? 'white' : 'var(--text-muted)',
+                background: attachedFile ? 'var(--primary-green-light)' : 'transparent',
+                color: attachedFile ? 'white' : 'var(--text-muted)',
                 border: 'none',
                 padding: '8px',
                 borderRadius: '50%',
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                position: 'relative'
               }}
-              title={mediaAttached ? "Remove attached media" : "Attach media for diagnosis"}
+              title={attachedFile ? "Remove attached media" : "Attach media for diagnosis"}
             >
               <Paperclip size={20} />
             </button>
             
-            <input 
-              type="text" 
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask KrishiMitra..."
-              style={{
-                flex: 1,
-                border: '1px solid #ccc',
-                padding: '10px 16px',
-                borderRadius: '20px',
-                outline: 'none',
-                fontSize: '0.95rem'
-              }}
-            />
+            <div style={{ flex: 1, position: 'relative' }}>
+              {previewUrl && (
+                <div style={{ position: 'absolute', bottom: '100%', left: '0', marginBottom: '8px', padding: '4px', background: 'white', borderRadius: '8px', border: '1px solid var(--glass-border)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <img src={previewUrl} alt="Preview" style={{ height: '60px', borderRadius: '4px', display: 'block' }} />
+                  <button 
+                    type="button" 
+                    onClick={handleAttachClick} 
+                    style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--accent-urgent)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              <input 
+                type="text" 
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={attachedFile ? "Add a description..." : "Ask KrishiMitra..."}
+                style={{
+                  width: '100%',
+                  border: '1px solid #ccc',
+                  padding: '10px 16px',
+                  borderRadius: '20px',
+                  outline: 'none',
+                  fontSize: '0.95rem'
+                }}
+              />
+            </div>
             
             <button type="submit" disabled={loading} style={{
               background: 'transparent',
