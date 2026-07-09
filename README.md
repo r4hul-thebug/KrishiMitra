@@ -17,7 +17,7 @@
 | 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini 2.5 Flash**, capable of analyzing crop images and diagnosing diseases with multi-modal vision capabilities |
+| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini 2.5 Flash**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis |
 | 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (Fixed cross-environment persistence) |
 
 ---
@@ -168,7 +168,7 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 | Phase | Status | Scope |
 |---|---|---|
 | **Phase 1** | ✅ Complete | Full-stack dashboard, JWT auth, advisory engine, yield calculator, crop suitability, voice summaries |
-| **Phase 2** | ✅ Complete | LLM chatbot grounded on engine output, Disease detection CNN (upgraded to Gemini Vision) |
+| **Phase 2** | ✅ Complete | LLM chatbot fully integrated with Gemini 2.5 Flash for text and multi-modal disease detection |
 | **Phase 3** | 🔜 Next | Bhashini STT/TTS integration, real-time Mandi prices, scheme recommendations |
 | **Phase 4** | 📋 Planned | Offline-first caching, IVR/WhatsApp channels, feature phone support |
 
