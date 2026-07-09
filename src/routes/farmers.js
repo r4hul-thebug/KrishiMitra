@@ -25,7 +25,8 @@ function validateFarmer(body) {
 }
 
 farmers.get('/', async (_req, res) => {
-  res.json(await store.listFarmers());
+  const allFarmers = await store.listFarmers();
+  res.json(allFarmers.map(({ password, ...rest }) => rest));
 });
 
 farmers.post('/', async (req, res) => {
@@ -48,13 +49,19 @@ farmers.post('/', async (req, res) => {
 farmers.get('/:id', async (req, res) => {
   const farmer = await store.getFarmer(req.params.id);
   if (!farmer) return res.status(404).json({ error: 'farmer not found' });
-  res.json(farmer);
+  const { password, ...safeFarmer } = farmer;
+  res.json(safeFarmer);
 });
 
 farmers.patch('/:id', async (req, res) => {
-  const updated = await store.updateFarmer(req.params.id, req.body);
+  // Prevent updating sensitive or immutable fields directly
+  const { id, officialId, password, ...safePatch } = req.body;
+  
+  const updated = await store.updateFarmer(req.params.id, safePatch);
   if (!updated) return res.status(404).json({ error: 'farmer not found' });
-  res.json(updated);
+  
+  const { password: _, ...safeFarmer } = updated;
+  res.json(safeFarmer);
 });
 
 // THE core endpoint: personalized, weather-aware advisory for one farmer.
