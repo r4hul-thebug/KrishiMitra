@@ -5,11 +5,19 @@ import { fetchSatelliteData } from '../services/satellite.js';
 import { getCrop } from '../knowledge/crops.js';
 import { cropDetails } from '../knowledge/crop_details.js';
 
+import { GoogleGenAI } from '@google/genai';
+
+// Initialize Gemini
+let ai = null;
+if (process.env.GEMINI_API_KEY) {
+  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+}
+
 export const chat = Router();
 
-// Simulated AI Chatbot Endpoint
+// Simulated AI Chatbot Endpoint (Now backed by Real AI for images!)
 chat.post('/', async (req, res) => {
-  const { farmerId, message = '', mediaAttached = false } = req.body;
+  const { farmerId, message = '', mediaAttached = false, mediaData = null } = req.body;
   
   if (!farmerId) return res.status(400).json({ error: 'farmerId is required' });
   
@@ -35,17 +43,54 @@ chat.post('/', async (req, res) => {
     }
   }
 
-  // 2. Simulated LLM Processing
+  // 2. LLM Processing
   let responseText = '';
   let responseType = 'text'; // 'text' or 'diagnosis'
 
   const msgLower = message.toLowerCase();
 
-  // If a media file is attached, run "Image Analysis"
+  // If a media file is attached, run Real Image Analysis via Gemini (if key exists) or fallback to simulation
   if (mediaAttached) {
     responseType = 'diagnosis';
     const details = cropDetails[crop.id];
-    if (details) {
+    
+    if (ai && mediaData) {
+      // Real Gemini API Call
+      try {
+        const prompt = `You are KrishiMitra, an expert Indian agricultural AI. 
+        The farmer has uploaded an image of their ${crop.name.en} crop. 
+        They said: "${message}". 
+        Current weather: ${weatherSummary}.
+        Here is the ICAR reference data for ${crop.name.en}: 
+        Diseases: ${details?.diseases || 'N/A'}
+        Pests: ${details?.pests || 'N/A'}
+        
+        Analyze the image carefully. Does it show signs of any of these diseases or pests, or something else like nutrient deficiency?
+        Provide a response in this exact format:
+        I have carefully analyzed the uploaded image of your **${crop.name.en}**.
+        
+        **Visual Diagnosis:** [Your diagnosis]
+        
+        **ICAR Recommended Prescription:**
+        [Your exact chemical or organic prescription]
+        
+        *Note: The current local weather conditions may accelerate this issue, so please implement these control measures quickly.*`;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: [
+            prompt,
+            { inlineData: { data: mediaData, mimeType: 'image/jpeg' } } // Assuming jpeg/png, gemini handles it
+          ]
+        });
+
+        responseText = response.text;
+      } catch (err) {
+        console.error("Gemini API Error:", err);
+        responseText = "Sorry, my visual analysis engine is currently unavailable. Please describe the symptoms in text.";
+      }
+    } else if (details) {
+      // Fallback to Simulation if no API key or no mediaData
       const diseaseText = details.diseases || '';
       const pestText = details.pests || '';
       
@@ -53,8 +98,6 @@ chat.post('/', async (req, res) => {
       let prescription = 'Apply a foliar spray of 2% Urea or a balanced NPK water-soluble fertilizer.';
       let issueType = 'Nutrient Stress';
 
-      // Pick disease or pest based on a simple hash of the farmerId + cropId to keep it deterministic per user/crop, or just random.
-      // We'll use a simple length check or keyword match from the user's message to decide, falling back to diseases.
       let focusText = diseaseText;
       if (msgLower.match(/(bug|pest|worm|insect|fly|borer|hopper)/)) {
         focusText = pestText;

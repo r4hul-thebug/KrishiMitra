@@ -42,6 +42,15 @@ export default function FloatingChat() {
     }
   }, [messages, isOpen, attachedFile]);
 
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]); // Only keep the base64 part, strip the data:image/jpeg;base64, prefix
+      reader.onerror = error => reject(error);
+    });
+  };
+
   const handleSend = async (e) => {
     e?.preventDefault();
     if (!input.trim() && !attachedFile) return;
@@ -49,6 +58,7 @@ export default function FloatingChat() {
     const userText = input.trim();
     const hasMedia = !!attachedFile;
     const currentPreviewUrl = previewUrl;
+    const fileToUpload = attachedFile;
 
     setMessages(prev => [...prev, { role: 'user', text: userText, mediaUrl: currentPreviewUrl }]);
     setInput('');
@@ -58,10 +68,16 @@ export default function FloatingChat() {
     setLoading(true);
 
     try {
+      let base64Media = null;
+      if (hasMedia && fileToUpload) {
+        base64Media = await getBase64(fileToUpload);
+      }
+
       const res = await axios.post(`${API_URL}/chat`, {
         farmerId,
         message: userText,
-        mediaAttached: hasMedia
+        mediaAttached: hasMedia,
+        mediaData: base64Media
       });
 
       setMessages(prev => [...prev, { role: 'ai', text: res.data.message, type: res.data.type }]);
