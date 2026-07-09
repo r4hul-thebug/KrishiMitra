@@ -99,26 +99,6 @@ export default function FloatingChat() {
         <button 
           className="fab" 
           onClick={() => setIsOpen(true)}
-          style={{
-            position: 'fixed',
-            bottom: '30px',
-            right: '30px',
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            background: 'var(--primary-green)',
-            color: 'white',
-            border: 'none',
-            boxShadow: '0 4px 16px rgba(46, 125, 50, 0.4)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            transition: 'transform 0.2s'
-          }}
-          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
           <MessageCircle size={28} />
         </button>
@@ -126,20 +106,7 @@ export default function FloatingChat() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="chat-window glass-card" style={{
-          position: 'fixed',
-          bottom: '30px',
-          right: '30px',
-          width: '350px',
-          height: '500px',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 0,
-          overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-          animation: 'fade-in-up 0.3s ease-out'
-        }}>
+        <div className="chat-window glass-card">
           {/* Header */}
           <div style={{
             background: 'var(--primary-green)',

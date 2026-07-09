@@ -332,3 +332,181 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   visibility: hidden;
   display: none !important;
 }
+
+/* ========================================= */
+/* Responsive & Mobile Optimizations         */
+/* ========================================= */
+
+/* Utility grids for Auth and Yield forms */
+.auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.yield-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Chat window & FAB bases (moved from inline styles) */
+.chat-window {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 350px;
+  height: 500px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  animation: fadeInUp 0.3s ease-out;
+  border-radius: 16px;
+}
+
+.fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-green);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: transform 0.2s;
+}
+.fab:hover {
+  transform: scale(1.1);
+}
+
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+  /* Layout Padding */
+  .container {
+    padding: 1rem;
+  }
+  
+  /* Hero Banner */
+  .header-banner {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  .header-banner h1 {
+    font-size: 2rem;
+  }
+  
+  /* Grids */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+  .yield-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  /* Sidebar -> Bottom Navigation Bar */
+  .sidebar {
+    width: 100%;
+    height: 64px;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  }
+  .sidebar:hover {
+    width: 100%;
+  }
+  
+  .sidebar-header {
+    padding: 0;
+    border-bottom: none;
+    gap: 0;
+    justify-content: center;
+  }
+  
+  .sidebar-text, .sidebar-text.title, .location-text {
+    display: none !important;
+  }
+  
+  .profile-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    padding: 0;
+    gap: 0;
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .sidebar-item {
+    padding: 12px;
+    gap: 0;
+    flex: 1;
+    justify-content: center;
+    border-left: none !important;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .sidebar-item:hover, .sidebar-item.active {
+    padding-left: 12px; /* Override desktop hover padding */
+    border-left: none !important;
+    border-bottom: 3px solid var(--primary-green-light);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    margin-bottom: 64px; /* Space for bottom nav */
+    width: 100% !important;
+  }
+  .sidebar:hover ~ .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  
+  /* Chat window mobile overrides */
+  .chat-window {
+    bottom: 80px; /* Above bottom nav */
+    right: 16px;
+    left: 16px;
+    width: auto;
+    height: calc(100vh - 100px);
+    max-height: 550px;
+  }
+  
+  .fab {
+    bottom: 80px; /* Above bottom nav */
+    right: 16px;
+    width: 56px;
+    height: 56px;
+  }
+  
+  .voice-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

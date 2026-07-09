@@ -176,7 +176,7 @@ export default function AuthScreen({ setToken }) {
 
           {!isLogin && (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="auth-grid">
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Primary Crop</label>
                   <select value={crop} onChange={(e) => setCrop(e.target.value)} style={inputStyle}>
@@ -247,7 +247,7 @@ export default function AuthScreen({ setToken }) {
                 {showYieldForm && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
                     {yieldHistoryList.map((record, index) => (
-                      <div key={index} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingBottom: '1rem', borderBottom: index < yieldHistoryList.length - 1 ? '1px dashed #CCC' : 'none' }}>
+                      <div key={index} className="yield-grid" style={{ paddingBottom: '1rem', borderBottom: index < yieldHistoryList.length - 1 ? '1px dashed #CCC' : 'none' }}>
                         <div>
                           <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>Year</label>
                           <input type="number" value={record.year} onChange={e => updateYieldRecord(index, 'year', e.target.value)} style={inputStyle} />
