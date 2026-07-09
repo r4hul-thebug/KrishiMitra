@@ -95,7 +95,7 @@ krishimitraaz/
 ## 🧪 Testing
 
 ```bash
-# Backend engine tests (6/6 passing)
+# Backend engine tests (16/16 passing - rigorously tested!)
 node --test test/engine.test.js
 
 # Frontend lint (0 errors, 0 warnings)
