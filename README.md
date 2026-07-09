@@ -16,6 +16,7 @@
 | 🎤 **Voice-Ready Summaries** | Structured output designed for Bhashini TTS (22 Indian languages) |
 | 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
+| 📱 **Mobile Responsive** | Fully fluid UI that transforms into an app-like bottom navigation on phones |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
 | 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini 2.5 Flash**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis |
 | 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (Fixed cross-environment persistence) |
@@ -32,7 +33,7 @@
 cd krishimitraaz
 npm install
 npm run seed        # Seed demo farmers
-npm start           # http://localhost:3000
+npm start           # http://localhost:10000
 ```
 
 ### 2. Frontend Dashboard
@@ -107,12 +108,12 @@ cd frontend && npm run lint
 
 ### Frontend (`.env` in `frontend/`)
 ```env
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=http://localhost:10000/api
 ```
 
 ### Backend (`.env` in root)
 ```env
-PORT=3000
+PORT=10000
 DATABASE_URL=postgresql://neondb_owner:... # Your Neon Postgres connection string
 GEMINI_API_KEY=your_gemini_api_key         # Google Gemini API key for image analysis
 WEATHER_PROVIDER=mock                      # or "openweather"
