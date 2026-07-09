@@ -162,7 +162,7 @@ export default function FloatingChat() {
                 Thinking...
               </div>
             )}
-            <div ref={messagesEndRef} />
+            <div ref={endRef} />
           </div>
 
           {/* Input Area */}

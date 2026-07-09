@@ -9,7 +9,7 @@ export const chat = Router();
 
 // Simulated AI Chatbot Endpoint
 chat.post('/', async (req, res) => {
-  const { farmerId, message, mediaAttached } = req.body;
+  const { farmerId, message = '', mediaAttached = false } = req.body;
   
   if (!farmerId) return res.status(400).json({ error: 'farmerId is required' });
   
