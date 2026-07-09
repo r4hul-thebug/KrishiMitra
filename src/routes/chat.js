@@ -46,6 +46,11 @@ chat.post('/', async (req, res) => {
   // 2. LLM Processing
   let responseText = '';
   let responseType = 'text'; // 'text' or 'diagnosis'
+  
+  if (!ai && process.env.GEMINI_API_KEY) {
+    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  
   let useFallback = !ai;
 
   const msgLower = message.toLowerCase();

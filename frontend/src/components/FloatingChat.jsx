@@ -15,6 +15,7 @@ export default function FloatingChat() {
   const [previewUrl, setPreviewUrl] = useState('');
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
+  const textInputRef = useRef(null);
 
   const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
 
@@ -33,6 +34,7 @@ export default function FloatingChat() {
       const file = e.target.files[0];
       setAttachedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      setTimeout(() => textInputRef.current?.focus(), 50);
     }
   };
 
@@ -253,6 +255,7 @@ export default function FloatingChat() {
               )}
               <input 
                 type="text" 
+                ref={textInputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={attachedFile ? "Add a description..." : "Ask KrishiMitra..."}
