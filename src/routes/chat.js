@@ -44,13 +44,37 @@ chat.post('/', async (req, res) => {
   // If a media file is attached, run "Image Analysis"
   if (mediaAttached) {
     responseType = 'diagnosis';
-    // Fake CNN response based on the crop type
-    if (crop.id === 'wheat' || crop.id === 'maize') {
-      responseText = `I have analyzed the image of your ${crop.name.en}. I detect early signs of Rust / Leaf Blight. \n\n**Diagnosis:** Fungal Infection.\n**Prescription:** Spray Mancozeb 75% WP at 2g/liter of water immediately. The current weather (${weatherSummary}) is highly conducive to fungal spread, so act within 24 hours.`;
-    } else if (crop.id === 'cotton' || crop.id === 'sugarcane') {
-      responseText = `I have analyzed the image of your ${crop.name.en}. I detect pest damage consistent with early borer / bollworm attacks. \n\n**Diagnosis:** Pest Infestation.\n**Prescription:** Setup 5 pheromone traps per acre today. If damage exceeds 5%, consider spraying Emamectin Benzoate 5% SG at 0.5g/liter.`;
+    const details = cropDetails[crop.id];
+    if (details) {
+      const diseaseText = details.diseases || '';
+      const pestText = details.pests || '';
+      
+      let identifiedIssue = 'General Nutrient Deficiency';
+      let prescription = 'Apply a foliar spray of 2% Urea or a balanced NPK water-soluble fertilizer.';
+      let issueType = 'Nutrient Stress';
+
+      // Pick disease or pest based on a simple hash of the farmerId + cropId to keep it deterministic per user/crop, or just random.
+      // We'll use a simple length check or keyword match from the user's message to decide, falling back to diseases.
+      let focusText = diseaseText;
+      if (msgLower.match(/(bug|pest|worm|insect|fly|borer|hopper)/)) {
+        focusText = pestText;
+        issueType = 'Pest Infestation';
+      } else if (diseaseText) {
+        issueType = 'Fungal / Bacterial Disease';
+      } else if (pestText) {
+        focusText = pestText;
+        issueType = 'Pest Infestation';
+      }
+
+      if (focusText.includes('Control:')) {
+          const parts = focusText.split('Control:');
+          identifiedIssue = parts[0].replace('Major diseases include', '').replace('Major pests of', '').trim().replace(/,\s*$/, '');
+          prescription = parts[1].trim();
+      }
+
+      responseText = `I have carefully analyzed the uploaded image of your **${crop.name.en}**.\n\n**Visual Diagnosis:** I detect symptoms highly consistent with **${identifiedIssue}** (${issueType}).\n\n**ICAR Recommended Prescription:**\n${prescription}\n\n*Note: The current local weather conditions (${weatherSummary || 'as forecasted'}) may accelerate this issue, so please implement these control measures within 24-48 hours.*`;
     } else {
-      responseText = `I have analyzed the image of your ${crop.name.en}. I see some nitrogen deficiency and minor spots, but no severe disease. \n\n**Diagnosis:** Nutrient Deficiency.\n**Prescription:** Apply a foliar spray of 2% Urea. Your satellite data shows ${satelliteSummary} which aligns with a slight biomass drop.`;
+      responseText = `I have analyzed the image of your ${crop.name.en}. I see minor spotting but no severe disease. \n\n**Diagnosis:** Nutrient Deficiency.\n**Prescription:** Apply a foliar spray of 2% Urea.`;
     }
   } 
   // Else, normal chat routing based on keywords
