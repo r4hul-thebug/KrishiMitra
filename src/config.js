@@ -3,7 +3,7 @@
 import 'node:process';
 
 export const config = {
-  port: Number(process.env.PORT) || 3000,
+  port: Number(process.env.PORT) || 10000,
   weather: {
     provider: process.env.WEATHER_PROVIDER || 'mock',
     openWeatherKey: process.env.OPENWEATHER_API_KEY || '',
