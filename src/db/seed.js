@@ -2,6 +2,7 @@
 // Run: npm run seed
 import { replaceAll, connectDB } from './store.js';
 import { randomUUID } from 'node:crypto';
+import bcrypt from 'bcryptjs';
 
 // Sowing dates are set relative to "today" so demo farmers are always mid-season.
 function daysAgo(n) {
@@ -10,11 +11,13 @@ function daysAgo(n) {
   return d.toISOString().slice(0, 10);
 }
 
+const defaultPassword = await bcrypt.hash('password123', 10);
+
 const farmers = [
   {
     id: randomUUID(),
     officialId: 'FARMER-001',
-    password: 'hashed_password_placeholder',
+    password: defaultPassword,
     createdAt: new Date().toISOString(),
     name: 'Ramlal',
     phone: '+91900000001',
@@ -29,7 +32,7 @@ const farmers = [
   {
     id: randomUUID(),
     officialId: 'FARMER-002',
-    password: 'hashed_password_placeholder',
+    password: defaultPassword,
     createdAt: new Date().toISOString(),
     name: 'Sita Devi',
     phone: '+91900000002',

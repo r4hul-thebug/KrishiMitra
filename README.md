@@ -17,8 +17,8 @@
 | 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **Advanced AI Chatbot** | Highly-grounded NLP assistant capable of answering complex agronomic queries |
-| 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID |
+| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini 2.5 Flash**, capable of analyzing crop images and diagnosing diseases with multi-modal vision capabilities |
+| 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (Fixed cross-environment persistence) |
 
 ---
 
@@ -113,13 +113,15 @@ VITE_API_URL=http://localhost:3000/api
 ### Backend (`.env` in root)
 ```env
 PORT=3000
-WEATHER_PROVIDER=mock          # or "openweather"
+DATABASE_URL=postgresql://neondb_owner:... # Your Neon Postgres connection string
+GEMINI_API_KEY=your_gemini_api_key         # Google Gemini API key for image analysis
+WEATHER_PROVIDER=mock                      # or "openweather"
 OPENWEATHER_API_KEY=your_key
-MARKET_PROVIDER=mock           # or "agmarknet"
+MARKET_PROVIDER=mock                       # or "agmarknet"
 DATAGOV_API_KEY=your_key
 ```
 
-All providers have mock fallbacks — **no API keys needed to run locally**.
+All providers have mock fallbacks (except Gemini which requires an API key for image features).
 
 ---
 
@@ -166,8 +168,8 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 | Phase | Status | Scope |
 |---|---|---|
 | **Phase 1** | ✅ Complete | Full-stack dashboard, JWT auth, advisory engine, yield calculator, crop suitability, voice summaries |
-| **Phase 2** | 🔜 Next | Bhashini STT/TTS integration, LLM chatbot grounded on engine output |
-| **Phase 3** | 📋 Planned | Disease detection CNN, real-time Mandi prices, scheme recommendations |
+| **Phase 2** | ✅ Complete | LLM chatbot grounded on engine output, Disease detection CNN (upgraded to Gemini Vision) |
+| **Phase 3** | 🔜 Next | Bhashini STT/TTS integration, real-time Mandi prices, scheme recommendations |
 | **Phase 4** | 📋 Planned | Offline-first caching, IVR/WhatsApp channels, feature phone support |
 
 ---

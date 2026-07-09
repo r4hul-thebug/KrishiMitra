@@ -47,13 +47,15 @@ auth.post('/login', async (req, res) => {
   }
 
   const farmer = await store.getFarmerByOfficialId(officialId);
+  
   if (!farmer) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'Invalid credentials (user not found)' });
   }
 
   const isMatch = await bcrypt.compare(password, farmer.password);
+  
   if (!isMatch) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'Invalid credentials (password mismatch)' });
   }
 
   const token = jwt.sign({ id: farmer.id }, JWT_SECRET, { expiresIn: '7d' });
