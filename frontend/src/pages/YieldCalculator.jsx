@@ -15,6 +15,10 @@ export default function YieldCalculator() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    document.title = 'Yield Calculator - KrishiMitraaz';
+  }, []);
+
+  useEffect(() => {
     const fetchCrops = async () => {
       try {
         const res = await axios.get(`${API_URL}/crops`);

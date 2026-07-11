@@ -14,6 +14,10 @@ export default function Suggestions() {
   const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
 
   useEffect(() => {
+    document.title = 'Crop Prediction - KrishiMitraaz';
+  }, []);
+
+  useEffect(() => {
     const fetchSuitability = async () => {
       try {
         setLoading(true);

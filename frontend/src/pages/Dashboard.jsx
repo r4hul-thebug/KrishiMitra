@@ -34,6 +34,10 @@ export default function Dashboard() {
   const farmerId = localStorage.getItem('krishimitraaz_farmer_id');
 
   useEffect(() => {
+    document.title = 'Dashboard - KrishiMitraaz';
+  }, []);
+
+  useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);

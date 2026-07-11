@@ -82,6 +82,10 @@ export default function AuthScreen({ setToken }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = isLogin ? 'Login - KrishiMitraaz' : 'Register - KrishiMitraaz';
+  }, [isLogin]);
+
   const handleAddYieldRecord = (e) => {
     e.preventDefault();
     setYieldHistoryList([
