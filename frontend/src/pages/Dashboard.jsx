@@ -87,12 +87,30 @@ export default function Dashboard() {
 
       {/* Voice Summary Segment */}
       {advisory?.speech && (
-        <div className="voice-card animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+        <div className="voice-card animate-fade-in-up" style={{animationDelay: '0.1s', position: 'relative'}}>
           <div className="voice-icon">
             <Volume2 size={28} />
           </div>
-          <div>
-            <h2 style={{color: 'var(--primary-green-dark)', marginBottom: '8px'}}>Voice Assistant Summary</h2>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h2 style={{color: 'var(--primary-green-dark)', margin: 0}}>Voice Assistant Summary</h2>
+              <button 
+                onClick={() => {
+                  if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                  } else {
+                    const utterance = new SpeechSynthesisUtterance(advisory.speech);
+                    utterance.lang = 'en-IN'; // Indian English accent
+                    utterance.rate = 0.9;     // Slightly slower for clarity
+                    window.speechSynthesis.speak(utterance);
+                  }
+                }}
+                className="btn-primary"
+                style={{ padding: '6px 12px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Volume2 size={16} /> Play Audio
+              </button>
+            </div>
             <div style={{fontSize: '1.125rem', lineHeight: 1.8, color: 'var(--text-main)'}}>
               {advisory.speech.split('\n').map((line, idx) => (
                 <div 
