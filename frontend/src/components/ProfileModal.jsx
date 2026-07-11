@@ -44,52 +44,53 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <button 
-        onClick={onClose} 
-        style={{ 
-          position: 'absolute', 
-          top: '20px', 
-          right: '20px', 
-          background: 'rgba(0,0,0,0.5)', 
-          border: '1px solid rgba(255,255,255,0.2)', 
-          borderRadius: '50%', 
-          padding: '8px', 
-          cursor: 'pointer', 
-          color: 'white',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <X size={24} />
-      </button>
-
       <div className="modal-content glass-card animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
           <h2 style={{ color: 'var(--primary-green-dark)', margin: 0 }}>{t('farmerProfile') || 'Farmer Profile'}</h2>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#E8F5E9', padding: '6px 12px', borderRadius: '20px', border: '1px solid #C8E6C9' }}>
-            <Globe size={16} color="var(--primary-green-dark)" />
-            <select 
-              value={currentLang} 
-              onChange={(e) => setCurrentLang(e.target.value)}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-                color: 'var(--primary-green-dark)',
-                cursor: 'pointer',
-                outline: 'none'
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#E8F5E9', padding: '6px 12px', borderRadius: '20px', border: '1px solid #C8E6C9' }}>
+              <Globe size={16} color="var(--primary-green-dark)" />
+              <select 
+                value={currentLang} 
+                onChange={(e) => setCurrentLang(e.target.value)}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  color: 'var(--primary-green-dark)',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
+                  <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
+                )}
+              </select>
+            </div>
+            
+            <button 
+              onClick={onClose} 
+              style={{ 
+                background: 'rgba(0,0,0,0.05)', 
+                border: 'none', 
+                borderRadius: '50%', 
+                padding: '6px', 
+                cursor: 'pointer', 
+                color: 'var(--text-main)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.2s'
               }}
+              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
+              onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
             >
-              <option value="en">English</option>
-              <option value="hi">हिंदी</option>
-              {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
-                <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
-              )}
-            </select>
+              <X size={20} />
+            </button>
           </div>
         </div>
 
