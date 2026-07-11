@@ -101,7 +101,7 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
           </p>
         </div>
 
-        <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '0' }}>
+        <div className="auth-grid" style={{ marginTop: '0' }}>
           <div style={{ background: 'rgba(255,255,255,0.5)', padding: '1rem', borderRadius: '12px' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>{t('primaryCrop') || 'Primary Crop'}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem', fontWeight: 'bold' }}>
@@ -131,7 +131,7 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
 
           {showAddForm && (
             <form onSubmit={handleSubmit} style={{ background: '#F8FAF8', border: '1px solid #E0E0E0', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="auth-grid" style={{ marginBottom: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px', fontWeight: 'bold' }}>Year</label>
                   <input type="number" required value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} style={inputStyle} />

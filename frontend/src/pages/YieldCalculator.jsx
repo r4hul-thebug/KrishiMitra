@@ -59,7 +59,7 @@ export default function YieldCalculator() {
         </div>
       </div>
 
-      <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+      <div className="dashboard-grid">
         
         <div className="glass-card animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: 'var(--primary-green-dark)' }}>{t('calcInputs')}</h2>
