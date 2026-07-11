@@ -43,30 +43,53 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose} style={{ position: 'relative' }}>
+      <button 
+        onClick={onClose} 
+        style={{ 
+          position: 'absolute', 
+          top: '20px', 
+          right: '20px', 
+          background: 'rgba(0,0,0,0.5)', 
+          border: '1px solid rgba(255,255,255,0.2)', 
+          borderRadius: '50%', 
+          padding: '8px', 
+          cursor: 'pointer', 
+          color: 'white',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <X size={24} />
+      </button>
+
       <div className="modal-content glass-card animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
-          <h2 style={{ color: 'var(--primary-green-dark)', margin: 0, marginTop: '8px' }}>{t('farmerProfile') || 'Farmer Profile'}</h2>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-            <div style={{ background: '#F8FAF8', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E0E0E0', minWidth: '180px' }}>
-              <h3 style={{ fontSize: '0.95rem', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-main)' }}>
-                <Globe size={18} color="var(--primary-green)" /> {t('changeLanguage')}
-              </h3>
-              <select 
-                value={currentLang} 
-                onChange={(e) => setCurrentLang(e.target.value)}
-                style={{...inputStyle, padding: '6px', fontSize: '0.9rem'}}
-              >
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
-                  <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
-                )}
-              </select>
-            </div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}>
-              <X size={24} />
-            </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
+          <h2 style={{ color: 'var(--primary-green-dark)', margin: 0 }}>{t('farmerProfile') || 'Farmer Profile'}</h2>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#E8F5E9', padding: '6px 12px', borderRadius: '20px', border: '1px solid #C8E6C9' }}>
+            <Globe size={16} color="var(--primary-green-dark)" />
+            <select 
+              value={currentLang} 
+              onChange={(e) => setCurrentLang(e.target.value)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                color: 'var(--primary-green-dark)',
+                cursor: 'pointer',
+                outline: 'none'
+              }}
+            >
+              <option value="en">English</option>
+              <option value="hi">हिंदी</option>
+              {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
+                <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
+              )}
+            </select>
           </div>
         </div>
 
