@@ -43,7 +43,7 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose} style={{ position: 'relative' }}>
+    <div className="modal-backdrop" onClick={onClose}>
       <button 
         onClick={onClose} 
         style={{ 
