@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Leaf, Droplets, Thermometer, ShieldAlert, Satellite, RefreshCw, Volume2, AlertTriangle } from 'lucide-react';
 import '../index.css';
@@ -37,28 +37,28 @@ export default function Dashboard() {
     document.title = 'Dashboard - KrishiMitraaz';
   }, []);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        
-        const [advisoryRes, threatsRes] = await Promise.all([
-          axios.get(`${API_URL}/farmers/${farmerId}/advisory?speech=1&lang=${currentLang}`),
-          axios.get(`${API_URL}/farmers/${farmerId}/threats?lang=${currentLang}`)
-        ]);
-        
-        setAdvisory(advisoryRes.data);
-        setThreats(threatsRes.data.threats || []);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (farmerId) fetchDashboardData();
+  const fetchDashboardData = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const [advisoryRes, threatsRes] = await Promise.all([
+        axios.get(`${API_URL}/farmers/${farmerId}/advisory?speech=1&lang=${currentLang}`),
+        axios.get(`${API_URL}/farmers/${farmerId}/threats?lang=${currentLang}`)
+      ]);
+      
+      setAdvisory(advisoryRes.data);
+      setThreats(threatsRes.data.threats || []);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
   }, [farmerId, currentLang]);
+
+  useEffect(() => {
+    if (farmerId) fetchDashboardData();
+  }, [farmerId, fetchDashboardData]);
 
   if (loading) {
     return (

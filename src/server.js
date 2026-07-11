@@ -1,5 +1,6 @@
 // KrishiMitraaz API server — Phase 1 advisory spine.
 import express from 'express';
+import 'express-async-errors';
 import cors from 'cors';
 import { config } from './config.js';
 import { farmers } from './routes/farmers.js';
