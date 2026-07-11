@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Leaf, Droplets, Thermometer, ShieldAlert, Satellite, RefreshCw, Volume2, AlertTriangle } from 'lucide-react';
 import '../index.css';
