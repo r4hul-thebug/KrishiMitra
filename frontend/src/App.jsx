@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LanguageProvider } from './contexts/LanguageContext';
 import AuthScreen from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Suggestions from './pages/Suggestions';
@@ -13,35 +14,37 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('krishimitraaz_token'));
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route 
-          path="/" 
-          element={
-            token ? <Navigate to="/dashboard" replace /> : <AuthScreen setToken={setToken} />
-          } 
-        />
-        <Route 
-          path="/*"
-          element={
-            token ? (
-              <div className="app-container">
-                <Sidebar setToken={setToken} />
-                <div className="main-content">
-                  <Routes>
-                    <Route path="dashboard" element={<Dashboard setToken={setToken} />} />
-                    <Route path="suggestions" element={<Suggestions />} />
-                    <Route path="calculator" element={<YieldCalculator />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              token ? <Navigate to="/dashboard" replace /> : <AuthScreen setToken={setToken} />
+            } 
+          />
+          <Route 
+            path="/*"
+            element={
+              token ? (
+                <div className="app-container">
+                  <Sidebar setToken={setToken} />
+                  <div className="main-content">
+                    <Routes>
+                      <Route path="dashboard" element={<Dashboard setToken={setToken} />} />
+                      <Route path="suggestions" element={<Suggestions />} />
+                      <Route path="calculator" element={<YieldCalculator />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </div>
+                  <FloatingChat />
                 </div>
-                <FloatingChat />
-              </div>
-            ) : <Navigate to="/" replace />
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+              ) : <Navigate to="/" replace />
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }
 

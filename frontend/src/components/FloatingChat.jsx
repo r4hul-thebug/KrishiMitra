@@ -3,11 +3,13 @@ import axios from 'axios';
 import { MessageCircle, X, Send, Paperclip, Bot } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function FloatingChat() {
+  const { t, currentLang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Namaste! I am your KrishiMitraaz assistant. Ask me anything about your crop, weather, or farming tips.' }
+    { role: 'ai', text: t('chatbotWelcome') || 'Namaste! I am your KrishiMitraaz assistant. Ask me anything about your crop, weather, or farming tips.' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -79,7 +81,8 @@ export default function FloatingChat() {
         farmerId,
         message: userText,
         mediaAttached: hasMedia,
-        mediaData: base64Media
+        mediaData: base64Media,
+        langCode: currentLang
       });
 
       setMessages(prev => [...prev, { role: 'ai', text: res.data.message, type: res.data.type }]);
@@ -225,7 +228,7 @@ export default function FloatingChat() {
                 ref={textInputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={attachedFile ? "Add a description..." : "Ask KrishiMitra..."}
+                placeholder={attachedFile ? "Add a description..." : t('chatPlaceholder')}
                 style={{
                   width: '100%',
                   border: '1px solid #ccc',

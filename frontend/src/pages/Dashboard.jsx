@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Leaf, Droplets, Thermometer, ShieldAlert, Satellite, RefreshCw, Volume2, AlertTriangle } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const iconMap = {
   'Hold irrigation': <Droplets size={24} color="white" />,
@@ -24,6 +25,7 @@ function getIconForTitle(title) {
 }
 
 export default function Dashboard() {
+  const { t, currentLang } = useLanguage();
   const [advisory, setAdvisory] = useState(null);
   const [threats, setThreats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,8 +40,8 @@ export default function Dashboard() {
         setError('');
         
         const [advisoryRes, threatsRes] = await Promise.all([
-          axios.get(`${API_URL}/farmers/${farmerId}/advisory?speech=1`),
-          axios.get(`${API_URL}/farmers/${farmerId}/threats`)
+          axios.get(`${API_URL}/farmers/${farmerId}/advisory?speech=1&lang=${currentLang}`),
+          axios.get(`${API_URL}/farmers/${farmerId}/threats?lang=${currentLang}`)
         ]);
         
         setAdvisory(advisoryRes.data);
@@ -52,13 +54,13 @@ export default function Dashboard() {
     };
 
     if (farmerId) fetchDashboardData();
-  }, [farmerId]);
+  }, [farmerId, currentLang]);
 
   if (loading) {
     return (
       <div className="container loading-container">
         <div className="spinner"></div>
-        <h2 className="animate-fade-in-up">Gathering Field Data...</h2>
+        <h2 className="animate-fade-in-up">{t('gatheringData')}</h2>
       </div>
     );
   }
@@ -67,9 +69,9 @@ export default function Dashboard() {
     return (
       <div className="container loading-container">
         <ShieldAlert size={64} color="var(--accent-urgent)" />
-        <h2 style={{marginTop: '1rem', color: 'var(--accent-urgent)'}}>Connection Error</h2>
+        <h2 style={{marginTop: '1rem', color: 'var(--accent-urgent)'}}>{t('connectionError')}</h2>
         <p style={{marginBottom: '2rem'}}>{error}</p>
-        <button onClick={fetchDashboardData} className="btn-primary">Try Again</button>
+        <button onClick={fetchDashboardData} className="btn-primary">{t('tryAgain')}</button>
       </div>
     );
   }
@@ -78,8 +80,8 @@ export default function Dashboard() {
     <div className="container">
       {/* Hero Header */}
       <div className="header-banner animate-fade-in-down">
-        <h1>Welcome Back</h1>
-        <p>Live AI & Satellite powered advisory for your <strong>{advisory?.cropName?.en || 'Crop'}</strong> field at <strong>{advisory?.stage?.name || 'Unknown Stage'}</strong>.</p>
+        <h1>{t('welcomeBack') || 'Welcome Back!'}</h1>
+        <p>{t('liveAdvisoryFor') || 'Live AI & Satellite powered advisory for your'} <strong>{advisory?.cropName?.[currentLang] || advisory?.cropName?.hi || advisory?.cropName?.en || 'Crop'}</strong> {t('fieldAt') || 'field at'} <strong>{advisory?.stage?.name || 'Unknown Stage'}</strong>.</p>
         <div style={{ position: 'absolute', top: '-20px', right: '-20px', opacity: 0.2, transform: 'scale(3)' }}>
           <Leaf size={120} />
         </div>
@@ -93,7 +95,7 @@ export default function Dashboard() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <h2 style={{color: 'var(--primary-green-dark)', margin: 0}}>Voice Assistant Summary</h2>
+              <h2 style={{color: 'var(--primary-green-dark)', margin: 0}}>{t('voiceAssistant')}</h2>
               <button 
                 onClick={() => {
                   if (window.speechSynthesis.speaking) {
@@ -129,7 +131,7 @@ export default function Dashboard() {
       {threats.length > 0 && (
         <div className="animate-fade-in-up" style={{ marginBottom: '2.5rem', animationDelay: '0.15s' }}>
           <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--accent-urgent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertTriangle size={28} /> Real-Time Threat Center
+            <AlertTriangle size={28} /> {t('realTimeThreats') || 'Real-Time Threat Center'}
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {threats.map((t, idx) => (
@@ -146,7 +148,7 @@ export default function Dashboard() {
       )}
 
       <h2 style={{fontSize: '1.75rem', marginBottom: '1rem', color: 'var(--primary-green-dark)'}}>
-        Detailed Insights
+        {t('detailedInsights') || 'Detailed Insights'}
       </h2>
 
       {/* Insights Grid */}

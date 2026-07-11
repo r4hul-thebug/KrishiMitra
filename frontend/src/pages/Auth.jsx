@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { User, Lock, ArrowRight, ShieldCheck, Map, Calendar, TrendingUp, Plus, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, ArrowRight, ShieldCheck, Map, Calendar, TrendingUp, Plus, Eye, EyeOff, Globe } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getStateLanguage } from '../utils/languageDetector';
 
 const AUTH_URL = `${API_URL}/auth`;
 
 export default function AuthScreen({ setToken }) {
+  const { currentLang, setCurrentLang, detectedLocalLang, setDetectedLocalLang, t, availableLangs } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [officialId, setOfficialId] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +27,9 @@ export default function AuthScreen({ setToken }) {
   ]);
   
   const [availableCrops, setAvailableCrops] = useState([]);
+  const [locationDetecting, setLocationDetecting] = useState(false);
 
+  // Fetch Crops & Detect Location
   useEffect(() => {
     const fetchCrops = async () => {
       try {
@@ -37,7 +42,41 @@ export default function AuthScreen({ setToken }) {
       }
     };
     fetchCrops();
-  }, []);
+
+    // Location Detection for Local Language
+    if (!detectedLocalLang && navigator.geolocation) {
+      setLocationDetecting(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+            const stateName = res.data.address?.state || res.data.display_name;
+            console.log("Geocoded location:", stateName);
+            if (stateName) {
+              const langCode = getStateLanguage(stateName);
+              console.log("Mapped Language Code:", langCode);
+              if (langCode) {
+                setDetectedLocalLang(langCode);
+                // Optionally auto-switch to it if they are registering
+                if (!localStorage.getItem('krishimitraaz_lang')) {
+                  setCurrentLang(langCode);
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Geocoding failed", err);
+          } finally {
+            setLocationDetecting(false);
+          }
+        },
+        () => {
+          setLocationDetecting(false); // Silent fail if user denies permission
+        },
+        { timeout: 5000 }
+      );
+    }
+  }, [detectedLocalLang, setCurrentLang, setDetectedLocalLang]);
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -106,12 +145,32 @@ export default function AuthScreen({ setToken }) {
   };
 
   return (
-    <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '90vh' }}>
-        <div className="glass-card animate-fade-in-up" style={{ maxWidth: '540px', width: '100%', padding: '2.5rem' }}>
+    <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '90vh', position: 'relative' }}>
+      
+      {/* Language Selector */}
+      <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+        <Globe size={18} color="var(--primary-green)" />
+        <select 
+          value={currentLang} 
+          onChange={(e) => setCurrentLang(e.target.value)}
+          style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.9rem', fontWeight: 'bold', cursor: 'pointer' }}
+        >
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+          {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
+            <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
+          )}
+        </select>
+      </div>
+
+      <div className="glass-card animate-fade-in-up" style={{ maxWidth: '540px', width: '100%', padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <ShieldCheck size={48} color="var(--primary-green)" style={{ marginBottom: '1rem' }} />
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>KrishiMitraaz</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Sign in with your Official ID (PM Kisan / Aadhar) to access your secure portal.</p>
+          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{t('welcome')}</h1>
+          <p style={{ color: 'var(--text-muted)' }}>{t('subtitle')}</p>
+          {locationDetecting && !isLogin && (
+            <p style={{ color: 'var(--primary-green)', fontSize: '0.85rem', marginTop: '8px' }}>{t('detectingLocation')}</p>
+          )}
         </div>
 
         {error && (
@@ -123,20 +182,20 @@ export default function AuthScreen({ setToken }) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {!isLogin && (
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Full Name</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('fullName')}</label>
               <input 
                 type="text" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
                 required 
                 style={inputStyle}
-                placeholder="e.g. Ramlal"
+                placeholder={t('fullNamePlaceholder')}
               />
             </div>
           )}
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Official ID Proof</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('officialId')}</label>
             <div style={{ position: 'relative' }}>
               <User size={20} color="var(--text-muted)" style={{ position: 'absolute', top: '12px', left: '12px' }} />
               <input 
@@ -145,13 +204,13 @@ export default function AuthScreen({ setToken }) {
                 onChange={(e) => setOfficialId(e.target.value)} 
                 required 
                 style={{...inputStyle, paddingLeft: '40px'}}
-                placeholder="Enter Official ID"
+                placeholder={t('officialIdPlaceholder')}
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Password</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('password')}</label>
             <div style={{ position: 'relative' }}>
               <Lock size={20} color="var(--text-muted)" style={{ position: 'absolute', top: '12px', left: '12px' }} />
               <input 
@@ -178,11 +237,11 @@ export default function AuthScreen({ setToken }) {
             <>
               <div className="auth-grid">
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Primary Crop</label>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('primaryCrop')}</label>
                   <select value={crop} onChange={(e) => setCrop(e.target.value)} style={inputStyle}>
                     {availableCrops.length > 0 ? (
                       availableCrops.map(c => (
-                        <option key={c.id} value={c.id}>{c.name.en}</option>
+                        <option key={c.id} value={c.id}>{c.name[currentLang] || c.name.en}</option>
                       ))
                     ) : (
                       <option value="wheat">Wheat</option>
@@ -190,7 +249,7 @@ export default function AuthScreen({ setToken }) {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Land Area (Acres)</label>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('landArea')}</label>
                   <div style={{ position: 'relative' }}>
                     <Map size={20} color="var(--text-muted)" style={{ position: 'absolute', top: '12px', left: '12px' }} />
                     <input 
@@ -207,7 +266,7 @@ export default function AuthScreen({ setToken }) {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Date of Sowing</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{t('sowingDate')}</label>
                 <div style={{ position: 'relative' }}>
                   <Calendar size={20} color="var(--text-muted)" style={{ position: 'absolute', top: '12px', left: '12px' }} />
                   <input 
@@ -230,7 +289,7 @@ export default function AuthScreen({ setToken }) {
                       style={{ width: '18px', height: '18px' }}
                     />
                     <TrendingUp size={18} color="var(--primary-green)" />
-                    Add Past Harvest History (Optional)
+                    {t('addHistory')}
                   </label>
                   
                   {showYieldForm && (
@@ -239,7 +298,7 @@ export default function AuthScreen({ setToken }) {
                       onClick={handleAddYieldRecord}
                       style={{ background: 'var(--primary-green-light)', border: 'none', color: 'white', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}
                     >
-                      <Plus size={14} /> Add Year
+                      <Plus size={14} /> {t('addYear')}
                     </button>
                   )}
                 </div>
@@ -249,19 +308,19 @@ export default function AuthScreen({ setToken }) {
                     {yieldHistoryList.map((record, index) => (
                       <div key={index} className="yield-grid" style={{ paddingBottom: '1rem', borderBottom: index < yieldHistoryList.length - 1 ? '1px dashed #CCC' : 'none' }}>
                         <div>
-                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>Year</label>
+                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>{t('year')}</label>
                           <input type="number" value={record.year} onChange={e => updateYieldRecord(index, 'year', e.target.value)} style={inputStyle} />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>Crop</label>
+                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>{t('crop')}</label>
                           <input type="text" value={record.crop} onChange={e => updateYieldRecord(index, 'crop', e.target.value)} style={inputStyle} placeholder="e.g. Wheat" />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>Yield / Acre</label>
+                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>{t('yieldPerAcre')}</label>
                           <input type="number" step="0.1" value={record.yield} onChange={e => updateYieldRecord(index, 'yield', e.target.value)} style={inputStyle} placeholder="e.g. 18" />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>Unit</label>
+                          <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '4px' }}>{t('unit')}</label>
                           <select value={record.unit} onChange={e => updateYieldRecord(index, 'unit', e.target.value)} style={inputStyle}>
                             <option value="Quintals">Quintals</option>
                             <option value="Kg">Kg</option>
@@ -277,19 +336,19 @@ export default function AuthScreen({ setToken }) {
           )}
 
           <button type="submit" disabled={loading} style={buttonStyle}>
-            {loading ? 'Processing...' : (isLogin ? 'Secure Login' : 'Create Account')}
+            {loading ? t('processing') : (isLogin ? t('secureLogin') : t('createAccount'))}
             {!loading && <ArrowRight size={20} />}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
           <p style={{ color: 'var(--text-muted)' }}>
-            {isLogin ? "Don't have an account?" : "Already registered?"}
+            {isLogin ? t('noAccount') : t('alreadyRegistered')}
             <button 
               onClick={() => { setIsLogin(!isLogin); setError(''); }}
               style={{ background: 'none', border: 'none', color: 'var(--primary-green)', fontWeight: 'bold', marginLeft: '8px', cursor: 'pointer' }}
             >
-              {isLogin ? 'Register Here' : 'Login'}
+              {isLogin ? t('registerHere') : t('loginHere')}
             </button>
           </p>
         </div>

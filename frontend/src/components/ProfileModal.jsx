@@ -3,8 +3,11 @@ import { X, LogOut, MapPin, Wheat, Sprout, TrendingUp, Plus, Save } from 'lucide
 import axios from 'axios';
 import '../index.css';
 import { API_URL } from '../config';
+import { useLanguage } from '../contexts/LanguageContext';
+import { Globe } from 'lucide-react';
 
 export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) {
+  const { currentLang, setCurrentLang, detectedLocalLang, t, availableLangs } = useLanguage();
   const [localHistory, setLocalHistory] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({ year: new Date().getFullYear(), crop: farmerData?.crop || '', yieldAmount: '', unit: 'Quintals' });
@@ -42,11 +45,29 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content glass-card animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
-          <h2 style={{ color: 'var(--primary-green-dark)', margin: 0 }}>Farmer Profile</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-            <X size={24} />
-          </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
+          <h2 style={{ color: 'var(--primary-green-dark)', margin: 0, marginTop: '8px' }}>{t('farmerProfile') || 'Farmer Profile'}</h2>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+            <div style={{ background: '#F8FAF8', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E0E0E0', minWidth: '180px' }}>
+              <h3 style={{ fontSize: '0.95rem', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-main)' }}>
+                <Globe size={18} color="var(--primary-green)" /> {t('changeLanguage')}
+              </h3>
+              <select 
+                value={currentLang} 
+                onChange={(e) => setCurrentLang(e.target.value)}
+                style={{...inputStyle, padding: '6px', fontSize: '0.9rem'}}
+              >
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                {detectedLocalLang && detectedLocalLang !== 'hi' && detectedLocalLang !== 'en' && (
+                  <option value={detectedLocalLang}>{availableLangs[detectedLocalLang]?.languageName}</option>
+                )}
+              </select>
+            </div>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px' }}>
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         <div style={{ marginBottom: '2rem' }}>
@@ -58,15 +79,15 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
 
         <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '0' }}>
           <div style={{ background: 'rgba(255,255,255,0.5)', padding: '1rem', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Primary Crop</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>{t('primaryCrop') || 'Primary Crop'}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem', fontWeight: 'bold' }}>
               <Wheat size={20} color="var(--primary-green)" /> {farmerData.crop?.toUpperCase() || 'N/A'}
             </div>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.5)', padding: '1rem', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Land Size</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>{t('landSize') || 'Land Size'}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem', fontWeight: 'bold' }}>
-              <Sprout size={20} color="var(--primary-green)" /> {farmerData.landAcres || 0} Acres
+              <Sprout size={20} color="var(--primary-green)" /> {farmerData.landAcres || 0} {t('acres') || 'Acres'}
             </div>
           </div>
         </div>
@@ -74,13 +95,13 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
         <div style={{ marginTop: '2.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 style={{ fontSize: '1.25rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={20} color="var(--primary-green)" /> Yield History
+              <TrendingUp size={20} color="var(--primary-green)" /> {t('yieldHistory') || 'Yield History'}
             </h3>
             <button 
               onClick={() => setShowAddForm(!showAddForm)}
               style={{ background: 'var(--primary-green-light)', border: 'none', color: 'white', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', fontWeight: 'bold' }}
             >
-              {showAddForm ? <X size={16} /> : <Plus size={16} />} {showAddForm ? 'Cancel' : 'Add Record'}
+              {showAddForm ? <X size={16} /> : <Plus size={16} />} {showAddForm ? 'Cancel' : (t('addRecord') || 'Add Record')}
             </button>
           </div>
 
@@ -116,7 +137,7 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
 
           {localHistory.length === 0 ? (
             <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', background: '#F8FAF8', borderRadius: '8px', border: '1px dashed #CCC' }}>
-              No yield history found. Add your past records to track your progress!
+              {t('noYieldHistory') || 'No yield history found. Add your past records to track your progress!'}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -131,6 +152,9 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
         </div>
 
         <div style={{ marginTop: '2.5rem' }}>
+          
+
+
           <button onClick={onLogout} style={{
             width: '100%',
             background: 'var(--accent-urgent-bg)', 
@@ -146,7 +170,7 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
             fontWeight: 'bold',
             fontSize: '1.1rem'
           }}>
-            <LogOut size={20} /> Secure Logout
+            <LogOut size={20} /> {t('logout')}
           </button>
         </div>
       </div>

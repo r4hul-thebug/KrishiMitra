@@ -5,8 +5,10 @@ import axios from 'axios';
 import '../index.css';
 import { API_URL } from '../config';
 import ProfileModal from './ProfileModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Sidebar({ setToken }) {
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -119,17 +121,17 @@ export default function Sidebar({ setToken }) {
       <nav className="sidebar-nav">
         <Link to="/dashboard" className={`sidebar-item ${isActive('/dashboard') ? 'active' : ''}`}>
           <Home size={24} className="sidebar-icon" />
-          <span className="sidebar-text">Diagnostics</span>
+          <span className="sidebar-text">{t('menuDashboard')}</span>
         </Link>
         
         <Link to="/suggestions" className={`sidebar-item ${isActive('/suggestions') ? 'active' : ''}`}>
           <Lightbulb size={24} className="sidebar-icon" />
-          <span className="sidebar-text">Crop Suggestions</span>
+          <span className="sidebar-text">{t('menuSuggestions')}</span>
         </Link>
         
         <Link to="/calculator" className={`sidebar-item ${isActive('/calculator') ? 'active' : ''}`}>
           <Calculator size={24} className="sidebar-icon" />
-          <span className="sidebar-text">Yield Calculator</span>
+          <span className="sidebar-text">{t('menuCalculator')}</span>
         </Link>
       </nav>
     </div>

@@ -6,6 +6,58 @@ import { getForecast } from '../services/weather.js';
 import { getPrices } from '../services/market.js';
 import { buildAdvisory, toSpeech } from '../engine/advisory.js';
 import { getSuitability } from '../engine/suitability.js';
+import { GoogleGenAI } from '@google/genai';
+
+let ai = null;
+if (process.env.GEMINI_API_KEY) {
+  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+}
+
+async function translateAdvisory(advisory, lang) {
+  if (!ai || !lang || lang === 'en') return advisory;
+  try {
+    const prompt = `Translate the following JSON object's "title" and "message" fields in the "items" array, and the "speech" field (if present) into the language code '${lang}'. Keep the JSON structure exactly the same. Do not use markdown blocks, return ONLY valid JSON. 
+    
+${JSON.stringify({ items: advisory.items, speech: advisory.speech })}`;
+    const response = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: prompt });
+    let text = response.text.trim();
+    if (text.startsWith('\`\`\`json')) text = text.substring(7);
+    if (text.startsWith('\`\`\`')) text = text.substring(3);
+    if (text.endsWith('\`\`\`')) text = text.substring(0, text.length - 3);
+    
+    const translated = JSON.parse(text);
+    advisory.items = translated.items || advisory.items;
+    if (translated.speech) advisory.speech = translated.speech;
+  } catch (e) {
+    console.error("Advisory translation failed:", e);
+  }
+  return advisory;
+}
+
+async function translateSuitability(suggestions, lang) {
+  if (!ai || !lang || lang === 'en') return suggestions;
+  try {
+    const prompt = `Translate the "reasoning" string and "crop" name in this array of objects to '${lang}'. Return ONLY valid JSON array with the exact same structure.
+    
+${JSON.stringify(suggestions.map(s => ({ crop: s.crop, reasoning: s.reasoning })))}`;
+    const response = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: prompt });
+    let text = response.text.trim();
+    if (text.startsWith('\`\`\`json')) text = text.substring(7);
+    if (text.startsWith('\`\`\`')) text = text.substring(3);
+    if (text.endsWith('\`\`\`')) text = text.substring(0, text.length - 3);
+    
+    const translated = JSON.parse(text);
+    translated.forEach((t, i) => {
+      if (suggestions[i]) {
+        suggestions[i].reasoning = t.reasoning || suggestions[i].reasoning;
+        suggestions[i].cropNameLocal = t.crop || suggestions[i].crop;
+      }
+    });
+  } catch (e) {
+    console.error("Suitability translation failed:", e);
+  }
+  return suggestions;
+}
 
 export const farmers = Router();
 
@@ -76,6 +128,11 @@ farmers.get('/:id/advisory', async (req, res) => {
   if (req.query.speech === '1') {
     advisory.speech = toSpeech(advisory, farmer.language);
   }
+  
+  if (req.query.lang) {
+    await translateAdvisory(advisory, req.query.lang);
+  }
+  
   res.json(advisory);
 });
 
@@ -92,7 +149,12 @@ farmers.get('/:id/suitability', async (req, res) => {
   if (!farmer || !farmer.location) return res.status(404).json({ error: 'farmer or location not found' });
   
   const forecast = await getForecast(farmer.location.lat, farmer.location.lon);
-  const suggestions = getSuitability(forecast);
+  let suggestions = getSuitability(forecast);
+  
+  if (req.query.lang) {
+    suggestions = await translateSuitability(suggestions, req.query.lang);
+  }
+  
   res.json({ suggestions });
 });
 
@@ -113,7 +175,12 @@ farmers.get('/:id/threats', async (req, res) => {
      item.title.toLowerCase().includes('disease'))
   );
 
-  res.json({ threats });
+  let responseObj = { threats };
+  if (req.query.lang) {
+    await translateAdvisory({ items: responseObj.threats }, req.query.lang);
+  }
+
+  res.json(responseObj);
 });
 
 // Add a new yield history record

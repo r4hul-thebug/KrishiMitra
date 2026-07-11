@@ -17,7 +17,7 @@ export const chat = Router();
 
 // Simulated AI Chatbot Endpoint (Now backed by Real AI for images!)
 chat.post('/', async (req, res) => {
-  const { farmerId, message = '', mediaAttached = false, mediaData = null } = req.body;
+  const { farmerId, message = '', mediaAttached = false, mediaData = null, langCode = 'en' } = req.body;
   
   if (!farmerId) return res.status(400).json({ error: 'farmerId is required' });
   
@@ -71,7 +71,8 @@ Diseases: ${details.diseases || 'N/A'}
 Pests: ${details.pests || 'N/A'}
 Harvest: ${details.harvest || 'N/A'}
 
-Keep your response concise, friendly, and strictly grounded in this agricultural context. Do not invent new unapproved chemicals. Respond directly to the user. Use markdown formatting to make the response readable.`;
+Keep your response concise, friendly, and strictly grounded in this agricultural context. Do not invent new unapproved chemicals. Respond directly to the user. Use markdown formatting to make the response readable.
+CRITICAL: You MUST write your ENTIRE response in the language code: '${langCode}'. If langCode is 'hi', reply in Hindi. If it is 'mr', reply in Marathi. If 'en', reply in English.`;
 
       let contents = [];
       
