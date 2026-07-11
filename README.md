@@ -157,7 +157,7 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 | Layer | Technology |
 |---|---|
 | Frontend | React 19, Vite 8, React Router 7 |
-| Backend | Node.js, Express 4, PostgreSQL (pg) |
+| Backend | Node.js, Express 4 (`express-async-errors`), PostgreSQL (pg) |
 | Auth | JWT (jsonwebtoken + bcryptjs) |
 | Icons | Lucide React |
 | Linting | Oxlint |

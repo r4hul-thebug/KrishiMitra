@@ -55,8 +55,8 @@ All providers are swappable behind normalized data shapes with mock fallbacks.
 - **Phase 2 — Voice & AI**
   Bhashini STT/TTS integration; LLM chatbot grounded on engine JSON output; MongoDB for chat persistence.
 
-- **Phase 3 — Ecosystem Integration**
-  Real-time Mandi prices UI, government scheme recommendations, disease-detection CNN & fertilizer guidance.
+- **Phase 3 — Ecosystem & Localization**
+  Real-time Mandi prices UI, government scheme recommendations, disease-detection CNN & fertilizer guidance. Dynamic layout adaptability and localization to regional languages (Completed).
 
 - **Phase 4 — Inclusivity & Scale**
   Offline/cache behavior, IVR/WhatsApp channels, simple local language interfaces, one flawless end-to-end demo script.
