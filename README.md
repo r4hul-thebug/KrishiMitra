@@ -18,8 +18,9 @@
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
 | 📱 **Mobile Responsive** | Fully fluid UI that transforms into an app-like bottom navigation on phones |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini 2.5 Flash**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis |
+| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis |
 | 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (Fixed cross-environment persistence) |
+| 🌍 **Comprehensive i18n** | Full regional language support for 10 Indian languages (Hindi, Marathi, Punjabi, Gujarati, Tamil, Telugu, Bengali, Kannada, Malayalam, Odia, Assamese, English) with location-based language auto-detection and on-the-fly LLM translation. |
 
 ---
 
@@ -169,9 +170,10 @@ KrishiMitraaz is optimized for seamless deployment across modern cloud platforms
 | Phase | Status | Scope |
 |---|---|---|
 | **Phase 1** | ✅ Complete | Full-stack dashboard, JWT auth, advisory engine, yield calculator, crop suitability, voice summaries |
-| **Phase 2** | ✅ Complete | LLM chatbot fully integrated with Gemini 2.5 Flash for text and multi-modal disease detection |
-| **Phase 3** | 🔜 Next | Bhashini STT/TTS integration, real-time Mandi prices, scheme recommendations |
-| **Phase 4** | 📋 Planned | Offline-first caching, IVR/WhatsApp channels, feature phone support |
+| **Phase 2** | ✅ Complete | LLM chatbot fully integrated with Gemini 1.5 Flash for text, multi-modal disease detection, and dynamic backend advisory translation |
+| **Phase 3** | ✅ Complete | Dynamic layout adaptability and robust UI multi-lingual localization across 10+ regional Indian languages (i18n context layer) |
+| **Phase 4** | 🔜 Next | Bhashini STT/TTS integration, real-time Mandi prices, scheme recommendations |
+| **Phase 5** | 📋 Planned | Offline-first caching, IVR/WhatsApp channels, feature phone support |
 
 ---
 
