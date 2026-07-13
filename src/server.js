@@ -7,11 +7,12 @@ import { farmers } from './routes/farmers.js';
 import { reference } from './routes/reference.js';
 import { auth } from './routes/auth.js';
 import { chat } from './routes/chat.js';
-import { connectDB } from './db/store.js';
+import { connectDB, getPool } from './db/store.js';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Simple request log so a solo dev can see what's happening.
 app.use((req, _res, next) => {
@@ -52,12 +53,35 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'internal error', detail: err.message });
 });
 
+
 async function start() {
   await connectDB(process.env.DATABASE_URL);
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(`\n🌱 KrishiMitraaz API running on http://localhost:${config.port}`);
     console.log(`   Try:  curl http://localhost:${config.port}/api/crops\n`);
   });
+
+  // Graceful shutdown
+  const shutdown = async (signal) => {
+    console.log(`\n[${signal}] Shutting down gracefully...`);
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      try {
+        const pool = getPool();
+        if (pool) {
+          await pool.end();
+          console.log('Database pool closed.');
+        }
+        process.exit(0);
+      } catch (err) {
+        console.error('Error during shutdown:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
 }
 
 start();

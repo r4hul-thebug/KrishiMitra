@@ -243,7 +243,7 @@ export function toSpeech(advisory, lang = 'en') {
   const lead = `Advisory for your ${name}. `;
   const body = advisory.items
     .slice(0, 4) // keep spoken output short for weak-network / low-attention use
-    .map((it, i) => `${i + 1}. ${it.message}`)
+    .map((it) => it.message)
     .join('\n');
   return lead + '\n' + body;
 }

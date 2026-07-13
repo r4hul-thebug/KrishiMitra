@@ -50,6 +50,11 @@ export default function Dashboard() {
       setAdvisory(advisoryRes.data);
       setThreats(threatsRes.data.threats || []);
     } catch (err) {
+      if (err.response && err.response.status === 404) {
+        localStorage.removeItem('krishimitraaz_farmer_id');
+        window.location.href = '/';
+        return;
+      }
       setError(err.message || 'Failed to fetch data');
     } finally {
       setLoading(false);
@@ -111,10 +116,25 @@ export default function Dashboard() {
                     window.speechSynthesis.speak(utterance);
                   }
                 }}
-                className="btn-primary"
-                style={{ padding: '6px 12px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ 
+                  padding: '8px 16px', 
+                  fontSize: '0.95rem', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  background: 'linear-gradient(135deg, var(--primary-green), var(--primary-green-dark))',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '24px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
+                  transition: 'all 0.3s ease',
+                  fontWeight: 'bold'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <Volume2 size={16} /> Play Audio
+                <Volume2 size={18} className="animate-pulse" /> {t('PlayAudio') || 'Play Audio'}
               </button>
             </div>
             <div style={{fontSize: '1.125rem', lineHeight: 1.8, color: 'var(--text-main)'}}>

@@ -13,13 +13,13 @@
 | 🏛️ **Government Dashboard** | Professional NIC-style enterprise UI — solid theme, high contrast, accessible |
 | 🌾 **AI Advisory Engine** | Weather-aware, stage-specific crop advice for **39 major Indian crops** |
 | 📡 **Satellite Integration** | NDVI crop health analysis via ISRO Bhuvan API |
-| 🎤 **Voice-Ready Summaries** | Structured output designed for Bhashini TTS (22 Indian languages) |
+| 🎤 **Voice-Ready Summaries** | Structured output designed for Bhashini TTS (22 Indian languages) with smart auto-language detection |
 | 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
 | 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
 | 📱 **Mobile Responsive** | Fully fluid UI that transforms into an app-like bottom navigation on phones |
 | 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis |
-| 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (Fixed cross-environment persistence) |
+| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis (supporting up to 50MB image payloads) |
+| 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (with auto-logout on stale session/404 handling) |
 | 🌍 **Comprehensive i18n** | Full regional language support for 10 Indian languages (Hindi, Marathi, Punjabi, Gujarati, Tamil, Telugu, Bengali, Kannada, Malayalam, Odia, Assamese, English) with location-based language auto-detection and on-the-fly LLM translation. |
 
 ---

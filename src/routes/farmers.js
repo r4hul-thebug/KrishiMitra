@@ -126,7 +126,8 @@ farmers.get('/:id/advisory', async (req, res) => {
   const advisory = await buildAdvisory(farmer, forecast);
 
   if (req.query.speech === '1') {
-    advisory.speech = toSpeech(advisory, farmer.language);
+    const speechLang = req.query.lang || farmer.language;
+    advisory.speech = toSpeech(advisory, speechLang);
   }
   
   if (req.query.lang) {

@@ -74,14 +74,28 @@ export async function updateFarmer(id, patch) {
   return res.rows[0].data;
 }
 
+export function getPool() {
+  return pool;
+}
+
 export async function replaceAll(data) {
   if (data.farmers) {
-    await pool.query('DELETE FROM farmers');
-    for (const farmer of data.farmers) {
-      await pool.query(
-        'INSERT INTO farmers (id, official_id, data) VALUES ($1, $2, $3)',
-        [farmer.id, farmer.officialId, farmer]
-      );
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM farmers');
+      for (const farmer of data.farmers) {
+        await client.query(
+          'INSERT INTO farmers (id, official_id, data) VALUES ($1, $2, $3)',
+          [farmer.id, farmer.officialId, farmer]
+        );
+      }
+      await client.query('COMMIT');
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
     }
   }
 }
