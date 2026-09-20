@@ -2,12 +2,18 @@
 import express from 'express';
 import 'express-async-errors';
 import cors from 'cors';
+import path from 'node:path';
+import fs from 'node:fs';
 import { config } from './config.js';
 import { farmers } from './routes/farmers.js';
 import { reference } from './routes/reference.js';
 import { auth } from './routes/auth.js';
 import { chat } from './routes/chat.js';
 import { connectDB, getPool } from './db/store.js';
+
+try {
+  process.loadEnvFile?.();
+} catch {}
 
 const app = express();
 app.use(cors());
@@ -27,26 +33,37 @@ app.use('/api/farmers', farmers);
 app.use('/api/chat', chat);
 app.use('/api', reference);
 
-// Friendly root that documents the API (handy while there's no frontend yet).
-app.get('/', (_req, res) => {
-  res.json({
-    service: 'KrishiMitraaz — Smart Crop Advisory (SIH25010)',
-    phase: 1,
-    endpoints: {
-      'GET /health': 'liveness check',
-      'GET /api/crops': 'list supported crops',
-      'GET /api/crops/:id': 'full crop knowledge (stages, nutrients)',
-      'GET /api/weather?lat=&lon=': 'normalized 5-day forecast',
-      'GET /api/prices?commodity=wheat': 'mandi prices',
-      'POST /api/farmers': 'create a farmer profile',
-      'GET /api/farmers': 'list farmers',
-      'GET /api/farmers/:id': 'get one farmer',
-      'PATCH /api/farmers/:id': 'update a farmer',
-      'GET /api/farmers/:id/advisory?speech=1': 'THE personalized advisory',
-      'GET /api/farmers/:id/prices': 'prices for the farmer\'s crop',
-    },
+const frontendDist = path.resolve('frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health') {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
   });
-});
+} else {
+  // Friendly root that documents the API (handy while there's no frontend yet).
+  app.get('/', (_req, res) => {
+    res.json({
+      service: 'KrishiMitraaz — Smart Crop Advisory (SIH25010)',
+      phase: 1,
+      endpoints: {
+        'GET /health': 'liveness check',
+        'GET /api/crops': 'list supported crops',
+        'GET /api/crops/:id': 'full crop knowledge (stages, nutrients)',
+        'GET /api/weather?lat=&lon=': 'normalized 5-day forecast',
+        'GET /api/prices?commodity=wheat': 'mandi prices',
+        'POST /api/farmers': 'create a farmer profile',
+        'GET /api/farmers': 'list farmers',
+        'GET /api/farmers/:id': 'get one farmer',
+        'PATCH /api/farmers/:id': 'update a farmer',
+        'GET /api/farmers/:id/advisory?speech=1': 'THE personalized advisory',
+        'GET /api/farmers/:id/prices': 'prices for the farmer\'s crop',
+      },
+    });
+  });
+}
 
 app.use((err, _req, res, _next) => {
   console.error('[error]', err);
@@ -56,7 +73,7 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   await connectDB(process.env.DATABASE_URL);
-  const server = app.listen(config.port, () => {
+  const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`\n🌱 KrishiMitraaz API running on http://localhost:${config.port}`);
     console.log(`   Try:  curl http://localhost:${config.port}/api/crops\n`);
   });

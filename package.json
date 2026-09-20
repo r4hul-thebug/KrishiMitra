@@ -5,11 +5,16 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node --env-file=.env src/server.js",
-    "dev": "node --env-file=.env --watch src/server.js",
-    "seed": "node --env-file=.env src/db/seed.js",
+    "start": "node src/server.js",
+    "dev": "npm run build --prefix frontend && node src/server.js",
+    "build": "npm run build --prefix frontend",
+    "lint": "npm run lint --prefix frontend",
+    "seed": "node src/db/seed.js",
     "test": "node --test test/engine.test.js"
   },
+  "workspaces": [
+    "frontend"
+  ],
   "keywords": [
     "agriculture",
     "advisory",

@@ -9,17 +9,21 @@ import { getSuitability } from '../engine/suitability.js';
 import { GoogleGenAI } from '@google/genai';
 
 let ai = null;
-if (process.env.GEMINI_API_KEY) {
-  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+function getAI() {
+  if (!ai && process.env.GEMINI_API_KEY) {
+    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  return ai;
 }
 
 async function translateAdvisory(advisory, lang) {
-  if (!ai || !lang || lang === 'en') return advisory;
+  const client = getAI();
+  if (!client || !lang || lang === 'en') return advisory;
   try {
     const prompt = `Translate the following JSON object's "title" and "message" fields in the "items" array, and the "speech" field (if present) into the language code '${lang}'. Keep the JSON structure exactly the same. Do not use markdown blocks, return ONLY valid JSON. 
     
 ${JSON.stringify({ items: advisory.items, speech: advisory.speech })}`;
-    const response = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: prompt });
+    const response = await client.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
     let text = response.text.trim();
     if (text.startsWith('\`\`\`json')) text = text.substring(7);
     if (text.startsWith('\`\`\`')) text = text.substring(3);
@@ -35,12 +39,13 @@ ${JSON.stringify({ items: advisory.items, speech: advisory.speech })}`;
 }
 
 async function translateSuitability(suggestions, lang) {
-  if (!ai || !lang || lang === 'en') return suggestions;
+  const client = getAI();
+  if (!client || !lang || lang === 'en') return suggestions;
   try {
     const prompt = `Translate the "reasoning" string and "crop" name in this array of objects to '${lang}'. Return ONLY valid JSON array with the exact same structure.
     
 ${JSON.stringify(suggestions.map(s => ({ crop: s.crop, reasoning: s.reasoning })))}`;
-    const response = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: prompt });
+    const response = await client.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
     let text = response.text.trim();
     if (text.startsWith('\`\`\`json')) text = text.substring(7);
     if (text.startsWith('\`\`\`')) text = text.substring(3);

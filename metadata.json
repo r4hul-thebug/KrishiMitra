@@ -1,0 +1,6 @@
+{
+  "name": "KrishiMitraaz",
+  "description": "Smart Crop Advisory System for small & marginal farmers. AI-powered, voice-ready advisory engine and dashboard.",
+  "requestFramePermissions": ["microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
