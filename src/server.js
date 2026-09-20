@@ -34,6 +34,16 @@ app.use('/api/chat', chat);
 app.use('/api', reference);
 
 const frontendDist = path.resolve('frontend/dist');
+if (!fs.existsSync(frontendDist)) {
+  console.log('Building frontend assets...');
+  try {
+    const { execSync } = await import('node:child_process');
+    execSync('npm run build --prefix frontend', { stdio: 'inherit' });
+  } catch (e) {
+    console.error('Failed to build frontend:', e.message);
+  }
+}
+
 if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
   app.get('*', (req, res, next) => {
@@ -72,11 +82,16 @@ app.use((err, _req, res, _next) => {
 
 
 async function start() {
-  await connectDB(process.env.DATABASE_URL);
   const server = app.listen(config.port, '0.0.0.0', () => {
-    console.log(`\n🌱 KrishiMitraaz API running on http://localhost:${config.port}`);
-    console.log(`   Try:  curl http://localhost:${config.port}/api/crops\n`);
+    console.log(`\n🌱 KrishiMitraaz API running on http://0.0.0.0:${config.port}`);
+    console.log(`   Try:  curl http://0.0.0.0:${config.port}/api/crops\n`);
   });
+
+  try {
+    await connectDB(process.env.DATABASE_URL);
+  } catch (err) {
+    console.warn('[store] DB connection error:', err.message);
+  }
 
   // Graceful shutdown
   const shutdown = async (signal) => {

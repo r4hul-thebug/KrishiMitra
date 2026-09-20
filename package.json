@@ -6,7 +6,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "npm run build --prefix frontend && node src/server.js",
+    "dev": "node src/server.js",
     "build": "npm run build --prefix frontend",
     "lint": "npm run lint --prefix frontend",
     "seed": "node src/db/seed.js",
