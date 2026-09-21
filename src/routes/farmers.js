@@ -10,8 +10,9 @@ import { GoogleGenAI } from '@google/genai';
 
 let ai = null;
 function getAI() {
-  if (!ai && process.env.GEMINI_API_KEY) {
-    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const key = process.env.GEMINI_API_KEY || process.env.LLM_API_KEY;
+  if (!ai && key) {
+    ai = new GoogleGenAI({ apiKey: key });
   }
   return ai;
 }

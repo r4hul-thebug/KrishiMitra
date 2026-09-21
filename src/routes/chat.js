@@ -9,8 +9,9 @@ import { GoogleGenAI } from '@google/genai';
 
 // Initialize Gemini
 let ai = null;
-if (process.env.GEMINI_API_KEY) {
-  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const geminiApiKey = process.env.GEMINI_API_KEY || process.env.LLM_API_KEY;
+if (geminiApiKey) {
+  ai = new GoogleGenAI({ apiKey: geminiApiKey });
 }
 
 export const chat = Router();
@@ -47,8 +48,9 @@ chat.post('/', async (req, res) => {
   let responseText = '';
   let responseType = 'text'; // 'text' or 'diagnosis'
   
-  if (!ai && process.env.GEMINI_API_KEY) {
-    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const currentKey = process.env.GEMINI_API_KEY || process.env.LLM_API_KEY;
+  if (!ai && currentKey) {
+    ai = new GoogleGenAI({ apiKey: currentKey });
   }
   
   let useFallback = !ai;

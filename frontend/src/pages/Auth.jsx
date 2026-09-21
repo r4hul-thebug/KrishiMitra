@@ -343,6 +343,33 @@ export default function AuthScreen({ setToken }) {
             {loading ? t('processing') : (isLogin ? t('secureLogin') : t('createAccount'))}
             {!loading && <ArrowRight size={20} />}
           </button>
+
+          {isLogin && (
+            <button
+              type="button"
+              onClick={() => {
+                setOfficialId('FARMER-001');
+                setPassword('password123');
+              }}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px dashed var(--primary-green-light)',
+                background: 'rgba(46, 125, 50, 0.06)',
+                color: 'var(--primary-green-light)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              🌱 Fill Demo Credentials (FARMER-001 / password123)
+            </button>
+          )}
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
