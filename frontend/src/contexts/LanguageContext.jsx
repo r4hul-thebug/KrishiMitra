@@ -5,11 +5,19 @@ import { translations } from '../i18n/translations';
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  // Default to English. User can explicitly set this.
-  const [currentLang, setCurrentLang] = useState(localStorage.getItem('krishimitraaz_lang') || 'en');
-  
-  // The dynamically detected 3rd language (e.g., 'mr', 'ta')
-  const [detectedLocalLang, setDetectedLocalLang] = useState(null);
+  // Restrict to English and Hindi as requested
+  const getInitialLang = () => {
+    const saved = localStorage.getItem('krishimitraaz_lang');
+    return saved === 'hi' ? 'hi' : 'en';
+  };
+
+  const [currentLang, setCurrentLangState] = useState(getInitialLang);
+
+  const setCurrentLang = (lang) => {
+    const valid = lang === 'hi' ? 'hi' : 'en';
+    setCurrentLangState(valid);
+    localStorage.setItem('krishimitraaz_lang', valid);
+  };
 
   useEffect(() => {
     localStorage.setItem('krishimitraaz_lang', currentLang);
@@ -17,7 +25,6 @@ export const LanguageProvider = ({ children }) => {
 
   // Translation helper function
   const t = (key) => {
-    // Fallback chain: Requested Lang -> English -> Key string
     if (translations[currentLang] && translations[currentLang][key]) {
       return translations[currentLang][key];
     }
@@ -31,10 +38,11 @@ export const LanguageProvider = ({ children }) => {
     <LanguageContext.Provider value={{ 
       currentLang, 
       setCurrentLang, 
-      detectedLocalLang, 
-      setDetectedLocalLang,
       t,
-      availableLangs: translations
+      supportedLanguages: [
+        { code: 'en', label: 'English', native: 'English' },
+        { code: 'hi', label: 'Hindi', native: 'हिन्दी' }
+      ]
     }}>
       {children}
     </LanguageContext.Provider>

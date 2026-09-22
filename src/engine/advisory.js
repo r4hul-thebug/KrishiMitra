@@ -230,6 +230,9 @@ export async function buildAdvisory(farmer, forecast) {
     cropName: crop.name,
     stage: stage ? { key: stage.key, name: stage.name, das } : null,
     weatherSource: forecast.source,
+    location: forecast.location || farmer.location || null,
+    weatherToday: forecast.daily?.[0] || null,
+    forecast: forecast.daily || [],
     generatedAt: new Date().toISOString(),
     items: ranked,
   };

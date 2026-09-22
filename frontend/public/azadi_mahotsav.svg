@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50">
+  <defs>
+    <linearGradient id="flagTricolor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#138808"/>
+    </linearGradient>
+  </defs>
+  <!-- Stylized 75 -->
+  <text x="25" y="38" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="36" fill="#0A3161" letter-spacing="-1">75</text>
+  <path d="M12 12 C25 6 38 6 46 12 C44 16 35 15 25 15 C18 15 14 16 12 12 Z" fill="#FF9933"/>
+  <circle cx="28" cy="24" r="2.5" fill="#000080"/>
+
+  <!-- Text -->
+  <text x="62" y="20" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="900" font-size="12" fill="#0A3161">आज़ादी का</text>
+  <text x="62" y="32" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="900" font-size="12" fill="#D97706">अमृत महोत्सव</text>
+  <text x="62" y="44" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="8" fill="#475569">1947 - 2026</text>
+</svg>

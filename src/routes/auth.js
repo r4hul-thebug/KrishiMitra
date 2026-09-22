@@ -4,10 +4,10 @@ import jwt from 'jsonwebtoken';
 import * as store from '../db/store.js';
 
 export const auth = Router();
-const JWT_SECRET = 'sih2025-krishimitraaz-super-secret'; // Hardcoded for hackathon demo
+const JWT_SECRET = process.env.JWT_SECRET || 'krishimitraaz-secure-farmer-portal-token-2026';
 
 auth.post('/register', async (req, res) => {
-  const { name, officialId, password, crop, sowingDate, landAcres, location, language, yieldHistory } = req.body;
+  const { name, officialId, password, crop, sowingDate, landAcres, location, language, yieldHistory, village, state } = req.body;
 
   if (!officialId || !password || !name) {
     return res.status(400).json({ error: 'name, officialId, and password are required' });
@@ -20,6 +20,15 @@ auth.post('/register', async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  let parsedLocation = { lat: 28.61, lon: 77.20 };
+  if (location && typeof location === 'object') {
+    const lat = parseFloat(location.lat ?? location.latitude);
+    const lon = parseFloat(location.lon ?? location.longitude);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      parsedLocation = { lat: Number(lat.toFixed(4)), lon: Number(lon.toFixed(4)) };
+    }
+  }
+
   const farmer = await store.createFarmer({
     name,
     officialId,
@@ -27,7 +36,9 @@ auth.post('/register', async (req, res) => {
     crop: crop || 'wheat',
     sowingDate: sowingDate || null,
     landAcres: landAcres ? parseFloat(landAcres) : 1,
-    location: location || { lat: 28.61, lon: 77.20 }, // Default location
+    location: parsedLocation,
+    village: village || null,
+    state: state || null,
     language: language || 'hi',
     yieldHistory: yieldHistory || [],
   });

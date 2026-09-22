@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "build:frontend": "npm run build --prefix frontend",
     "build": "npm run build:frontend",
-    "dev": "npm run build:frontend && node src/server.js",
+    "dev": "node src/server.js",
     "lint": "npm run lint --prefix frontend",
     "seed": "node src/db/seed.js",
     "test": "node --test test/engine.test.js"

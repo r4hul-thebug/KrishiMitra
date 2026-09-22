@@ -56,7 +56,7 @@ if (fs.existsSync(frontendDist)) {
   // Friendly root that documents the API (handy while there's no frontend yet).
   app.get('/', (_req, res) => {
     res.json({
-      service: 'KrishiMitraaz — Smart Crop Advisory (SIH25010)',
+      service: 'KrishiMitraaz — Smart Crop Advisory & Farm Intelligence Platform',
       phase: 1,
       endpoints: {
         'GET /health': 'liveness check',
@@ -85,6 +85,18 @@ async function start() {
   const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`\n🌱 KrishiMitraaz API running on http://0.0.0.0:${config.port}`);
     console.log(`   Try:  curl http://0.0.0.0:${config.port}/api/crops\n`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.warn(`[server] Port ${config.port} temporarily busy, retrying in 500ms...`);
+      setTimeout(() => {
+        server.close();
+        server.listen(config.port, '0.0.0.0');
+      }, 500);
+    } else {
+      console.error('[server] Server error:', err);
+    }
   });
 
   try {

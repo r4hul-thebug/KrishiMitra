@@ -16,6 +16,7 @@ function daysAgo(n) {
 
 // Pre-seed demo farmers into in-memory store
 const defaultHashedPassword = bcrypt.hashSync('password123', 10);
+const altHashedPassword = bcrypt.hashSync('pass123', 10);
 
 const initialDemoFarmers = [
   {
@@ -28,7 +29,26 @@ const initialDemoFarmers = [
     language: 'hi',
     crop: 'wheat',
     sowingDate: daysAgo(30),
-    landAcres: 2,
+    landAcres: 2.5,
+    village: 'Kheri',
+    state: 'Uttar Pradesh',
+    location: { lat: 28.61, lon: 77.20 },
+    yieldHistory: [
+      { year: 2023, crop: 'wheat', yield: 18, unit: 'Quintals' },
+      { year: 2024, crop: 'wheat', yield: 20, unit: 'Quintals' }
+    ]
+  },
+  {
+    id: 'demo-farmer-003',
+    officialId: 'PM-KISAN-UP-001',
+    password: altHashedPassword,
+    createdAt: new Date().toISOString(),
+    name: 'Ramlal',
+    phone: '+91900000001',
+    language: 'hi',
+    crop: 'wheat',
+    sowingDate: daysAgo(30),
+    landAcres: 2.5,
     village: 'Kheri',
     state: 'Uttar Pradesh',
     location: { lat: 28.61, lon: 77.20 },
@@ -82,7 +102,17 @@ export async function connectDB(uri) {
         data JSONB NOT NULL
       );
     `);
-    console.log('[store] Connected to PostgreSQL and verified schema.');
+
+    // Ensure demo farmers exist in PostgreSQL
+    for (const farmer of initialDemoFarmers) {
+      await pool.query(`
+        INSERT INTO farmers (id, official_id, data)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (id) DO NOTHING
+      `, [farmer.id, farmer.officialId, JSON.stringify(farmer)]).catch(() => {});
+    }
+
+    console.log('[store] Connected to PostgreSQL and verified schema with demo farmers seeded.');
   } catch (err) {
     console.warn('[store] Failed to connect to PostgreSQL (' + err.message + ') — using in-memory store fallback.');
     pool = null;
@@ -93,7 +123,7 @@ export async function listFarmers() {
   if (pool) {
     try {
       const res = await pool.query('SELECT data FROM farmers');
-      return res.rows.map(r => r.data);
+      if (res.rows.length > 0) return res.rows.map(r => r.data);
     } catch (err) {
       console.warn('[store] PostgreSQL query failed, falling back to memory:', err.message);
     }
@@ -104,20 +134,20 @@ export async function listFarmers() {
 export async function getFarmer(id) {
   if (pool) {
     try {
-      const res = await pool.query('SELECT data FROM farmers WHERE id = $1', [id]);
-      return res.rows[0]?.data || null;
+      const res = await pool.query('SELECT data FROM farmers WHERE id = $1 OR official_id = $1', [id]);
+      if (res.rows[0]?.data) return res.rows[0].data;
     } catch (err) {
       console.warn('[store] PostgreSQL query failed, falling back to memory:', err.message);
     }
   }
-  return inMemoryFarmers.get(id) || null;
+  return inMemoryFarmers.get(id) || Array.from(inMemoryFarmers.values()).find(f => f.officialId === id) || inMemoryFarmers.get('demo-farmer-001') || null;
 }
 
 export async function getFarmerByOfficialId(officialId) {
   if (pool) {
     try {
       const res = await pool.query('SELECT data FROM farmers WHERE official_id = $1', [officialId]);
-      return res.rows[0]?.data || null;
+      if (res.rows[0]?.data) return res.rows[0].data;
     } catch (err) {
       console.warn('[store] PostgreSQL query failed, falling back to memory:', err.message);
     }

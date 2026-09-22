@@ -1,104 +1,382 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --primary-green: #1B5E20; /* Darker, more official green */
-  --primary-green-light: #2E7D32;
-  --primary-green-dark: #003300;
+  /* Official Indian Government Portal Palette (GIGW 3.0 Compliant) */
+  --gov-navy: #0A3161;       /* Official National Portal Blue */
+  --gov-navy-dark: #061F3E;  /* Deep Utility Header Blue */
+  --gov-navy-light: #1E4E8C;
   
-  --sidebar-bg: #0F172A; /* Deep slate for sidebar */
-  --sidebar-text: #F1F5F9;
-  --sidebar-text-muted: #94A3B8;
-  
-  --bg-color: #F4F6F9; /* Solid light gray background */
-  --surface-color: #FFFFFF;
-  
-  --text-main: #1F2937;
-  --text-muted: #4B5563;
-  
-  --card-border: #E5E7EB;
-  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --gov-green: #004D25;      /* Ministry of Agriculture Forest Green */
+  --gov-green-dark: #003319;
+  --gov-green-light: #006837;
+  --gov-green-emerald: #138808; /* National Tricolor Green */
 
-  --accent-urgent: #DC2626;
+  --gov-saffron: #FF9933;    /* National Tricolor Saffron */
+  --gov-saffron-dark: #D97706;
+  --gov-saffron-light: #FEF3C7;
+  
+  --gov-gold: #B45309;
+
+  /* Surfaces & Backgrounds */
+  --bg-color: #F4F6F9;       /* Official Government Off-White/Grey Canvas */
+  --surface-color: #FFFFFF;
+  --surface-alt: #F8FAFC;
+  --border-color: #D1D5DB;   /* Crisp Standard Government Border */
+  --border-subtle: #E5E7EB;
+
+  /* Text & Readability */
+  --text-main: #111827;      /* High-contrast WCAG AAA */
+  --text-muted: #4B5563;
+  --text-light: #6B7280;
+
+  /* Status Colors */
+  --accent-urgent: #B91C1C;
   --accent-urgent-bg: #FEF2F2;
-  
-  --accent-important: #D97706;
+  --accent-important: #B45309;
   --accent-important-bg: #FFFBEB;
-  
-  --accent-info: #2563EB;
-  --accent-info-bg: #EFF6FF;
+  --accent-success: #047857;
+  --accent-success-bg: #ECFDF5;
+  --accent-info: #0369A1;
+  --accent-info-bg: #F0F9FF;
+
+  /* Elevation */
+  --gov-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --gov-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+}
+
+/* High Contrast Mode (Mandatory GIGW Accessibility Standard) */
+html.high-contrast {
+  --gov-navy: #000000;
+  --gov-navy-dark: #000000;
+  --gov-navy-light: #1A1A1A;
+  --gov-green: #000000;
+  --gov-green-dark: #000000;
+  --gov-saffron: #FFFF00;
+  --bg-color: #000000;
+  --surface-color: #121212;
+  --surface-alt: #1E1E1E;
+  --border-color: #FFFF00;
+  --border-subtle: #FFFF00;
+  --text-main: #FFFFFF;
+  --text-muted: #FFFF00;
+  --text-light: #FFFF00;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast * {
+  border-color: #FFFF00 !important;
+}
+
+html.high-contrast a, html.high-contrast button {
+  color: #FFFF00 !important;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Outfit', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
   min-height: 100vh;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glass-card repurposed to Solid Pro Card */
-.glass-card {
+/* Official Government Card Design */
+.glass-card, .gov-card {
   background: var(--surface-color);
-  border: 1px solid var(--card-border);
-  border-radius: 8px; /* Sharper, more professional corners */
-  box-shadow: var(--card-shadow);
-  padding: 24px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: var(--gov-shadow);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease-in-out;
 }
 
-.glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.gov-card-header {
+  background: #F1F5F9;
+  border-bottom: 2px solid var(--gov-navy);
+  padding: 10px 16px;
+  font-weight: 700;
+  color: var(--gov-navy);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* Animations */
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+.gov-card-header.green {
+  border-bottom-color: var(--gov-green);
+  color: var(--gov-green);
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.gov-card-header.saffron {
+  border-bottom-color: var(--gov-saffron-dark);
+  color: var(--gov-saffron-dark);
 }
 
-.animate-fade-in-down {
-  animation: fadeInDown 0.6s ease-out forwards;
+.gov-card-body {
+  padding: 16px;
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+/* Official Government Table */
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
 }
 
-/* Typography */
-h1 {
-  font-size: 3rem;
+.gov-table th {
+  background: var(--gov-navy);
+  color: #FFFFFF;
+  font-weight: 700;
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid #1E4E8C;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.gov-table.green th {
+  background: var(--gov-green);
+  border-color: #003319;
+}
+
+.gov-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.gov-table tr:nth-child(even) {
+  background: #F8FAFC;
+}
+
+.gov-table tr:hover {
+  background: #EFF6FF;
+}
+
+/* Official Stamps & Badges */
+.gov-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--primary-green-dark);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-main);
+.gov-badge-verified {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
 }
 
-p {
+.gov-badge-official {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+}
+
+.gov-badge-alert {
+  background: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.gov-badge-warning {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+/* Official Government Hero Banner */
+.header-banner {
+  background: linear-gradient(135deg, #092C53 0%, #0F4571 52%, #064E3B 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 4px solid #F59E0B;
+  border-radius: 8px;
+  padding: 1.75rem 2rem;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(10, 49, 97, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-banner::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-banner h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.header-banner p {
+  color: #E0F2FE;
+  font-size: 0.95rem;
   line-height: 1.6;
 }
 
-/* Layout Utilities */
+/* Interactive Card & Button Polish */
+.interactive-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+/* Audio Waveform Equalizer Animation */
+.audio-wave-bar {
+  width: 3px;
+  background: #10B981;
+  border-radius: 2px;
+  animation: audioWave 1s ease-in-out infinite;
+}
+
+.audio-wave-bar:nth-child(2) { animation-delay: 0.2s; height: 16px; }
+.audio-wave-bar:nth-child(3) { animation-delay: 0.4s; height: 20px; }
+.audio-wave-bar:nth-child(4) { animation-delay: 0.15s; height: 14px; }
+.audio-wave-bar:nth-child(5) { animation-delay: 0.35s; height: 18px; }
+
+@keyframes audioWave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.1); }
+}
+
+/* Live Status Pulse Dot */
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+  box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Official Government Buttons */
+.gov-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s ease-in-out;
+  text-decoration: none;
+}
+
+.gov-btn-primary {
+  background: var(--gov-navy);
+  color: #FFFFFF;
+  border-color: var(--gov-navy-dark);
+}
+
+.gov-btn-primary:hover {
+  background: #08264D;
+}
+
+.gov-btn-green {
+  background: var(--gov-green);
+  color: #FFFFFF;
+  border-color: var(--gov-green-dark);
+}
+
+.gov-btn-green:hover {
+  background: #003B1C;
+}
+
+.gov-btn-outline {
+  background: #FFFFFF;
+  color: var(--gov-navy);
+  border-color: var(--gov-navy);
+}
+
+.gov-btn-outline:hover {
+  background: #F0F4F8;
+}
+
+.gov-btn-saffron {
+  background: var(--gov-saffron-dark);
+  color: #FFFFFF;
+  border-color: #B45309;
+}
+
+.gov-btn-saffron:hover {
+  background: #B45309;
+}
+
+/* Breadcrumb Navigation */
+.gov-breadcrumb {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-color);
+  padding: 8px 24px;
+  font-size: 0.78rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gov-breadcrumb a {
+  color: var(--gov-navy);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.gov-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Standard Utility & Grid Classes */
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.25rem 1rem;
 }
 
 .flex { display: flex; }
@@ -110,69 +388,51 @@ p {
 .gap-4 { gap: 1rem; }
 .gap-6 { gap: 1.5rem; }
 
-/* Dashboard Specific Styles */
+/* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .severity-urgent {
-  border-left: 6px solid var(--accent-urgent);
-  background: var(--surface-color);
+  border-left: 4px solid var(--accent-urgent) !important;
+  background: #FFFFFF;
 }
+
 .severity-important {
-  border-left: 6px solid var(--accent-important);
-  background: var(--surface-color);
+  border-left: 4px solid var(--accent-important) !important;
+  background: #FFFFFF;
 }
+
 .severity-info {
-  border-left: 6px solid var(--primary-green-light);
-  background: var(--surface-color);
-}
-
-.header-banner {
-  background: linear-gradient(135deg, var(--primary-green-dark), var(--primary-green));
-  border-radius: 24px;
-  padding: 3rem;
-  color: white;
-  margin-bottom: 2rem;
-  box-shadow: 0 20px 40px rgba(46, 125, 50, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.header-banner h1 {
-  color: white;
-  margin-bottom: 0.5rem;
-}
-
-.header-banner p {
-  font-size: 1.125rem;
-  opacity: 0.9;
-  max-width: 600px;
+  border-left: 4px solid var(--gov-navy) !important;
+  background: #FFFFFF;
 }
 
 /* Voice Card */
 .voice-card {
-  background: linear-gradient(to right, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
-  border-left: 6px solid var(--primary-green);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
+  background: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-left: 4px solid var(--gov-green);
+  padding: 1rem 1.25rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: flex-start;
   gap: 1rem;
 }
 
 .voice-icon {
-  background: var(--primary-green);
+  background: var(--gov-green);
   color: white;
-  padding: 12px;
-  border-radius: 50%;
+  padding: 8px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .loading-container {
@@ -180,16 +440,16 @@ p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60vh;
+  height: 50vh;
 }
 
 .spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid rgba(76, 175, 80, 0.2);
-  border-left-color: var(--primary-green);
+  width: 44px;
+  height: 44px;
+  border: 4px solid #E2E8F0;
+  border-left-color: var(--gov-navy);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
 }
 
@@ -197,116 +457,27 @@ p {
   to { transform: rotate(360deg); }
 }
 
-/* Sidebar Layout */
-.app-container {
-  display: flex;
-  min-height: 100vh;
+/* Input Fields */
+input, select, textarea {
+  border: 1px solid #9CA3AF;
+  border-radius: 3px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  background: #FFFFFF;
+  color: #111827;
 }
 
-.sidebar {
-  width: 80px;
-  background: var(--sidebar-bg);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--gov-navy);
+  box-shadow: 0 0 0 2px rgba(10, 49, 97, 0.2);
 }
 
-.sidebar:hover {
-  width: 260px;
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  padding: 24px 20px;
-  gap: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.profile-icon-wrapper {
-  background: var(--primary-green-light);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  flex-shrink: 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  padding: 20px 0;
-  gap: 12px;
-}
-
-.sidebar-icon {
-  flex-shrink: 0;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 28px;
-  gap: 24px;
-  text-decoration: none;
-  color: var(--sidebar-text-muted);
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.sidebar-item:hover, .sidebar-item.active {
-  color: var(--sidebar-text);
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 4px solid var(--primary-green-light);
-  padding-left: 24px;
-}
-
-.sidebar-text {
-  font-weight: 500;
-  font-size: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.sidebar:hover .sidebar-text {
-  opacity: 1;
-}
-
-.sidebar-text.title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--sidebar-text);
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 80px; /* Space for collapsed sidebar */
-  transition: margin-left 0.3s ease;
-  width: calc(100% - 80px);
-}
-
-.sidebar:hover ~ .main-content {
-  margin-left: 260px;
-  width: calc(100% - 260px);
-}
-
-/* Modal Styling */
+/* Government Modal Backdrop */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.65);
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -315,198 +486,67 @@ p {
 
 .modal-content {
   width: 90%;
-  max-width: 500px;
+  max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.95);
+  background: #FFFFFF;
+  border-radius: 4px;
+  border: 2px solid var(--gov-navy);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
-/* Hide the native eye icon in Edge/IE for password fields to avoid double eyes */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
-}
-
-/* Hide native eye icon in Webkit browsers (Chrome/Safari) if they ever add one */
-input[type="password"]::-webkit-credentials-auto-fill-button {
-  visibility: hidden;
-  display: none !important;
-}
-
-/* ========================================= */
-/* Responsive & Mobile Optimizations         */
-/* ========================================= */
-
-/* Utility grids for Auth and Yield forms */
-.auth-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.yield-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 1rem;
-}
-
-/* Chat window & FAB bases (moved from inline styles) */
+/* Floating AI Assistant in Govt Style */
 .chat-window {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 350px;
-  height: 500px;
+  bottom: 24px;
+  right: 24px;
+  width: 380px;
+  height: 520px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  animation: fadeInUp 0.3s ease-out;
-  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  border-radius: 6px;
+  border: 2px solid var(--gov-green);
+  background: #FFFFFF;
 }
 
 .fab {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
+  bottom: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  background: var(--primary-green);
+  background: var(--gov-green);
   color: white;
-  border: none;
-  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.4);
+  border: 2px solid var(--gov-saffron);
+  box-shadow: 0 4px 12px rgba(0, 77, 37, 0.35);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  transition: transform 0.2s;
-}
-.fab:hover {
-  transform: scale(1.1);
+  transition: transform 0.15s ease-in-out;
 }
 
-/* Mobile Breakpoint */
-@media (max-width: 768px) {
-  /* Layout Padding */
-  .container {
-    padding: 1rem;
-  }
-  
-  /* Hero Banner */
-  .header-banner {
-    padding: 1.5rem;
-    border-radius: 16px;
-  }
-  .header-banner h1 {
-    font-size: 2rem;
-  }
-  
-  /* Grids */
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .auth-grid {
-    grid-template-columns: 1fr;
-  }
-  .yield-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  /* Sidebar -> Bottom Navigation Bar */
-  .sidebar {
-    width: 100%;
-    height: 64px;
-    bottom: 0;
-    top: auto;
-    left: 0;
-    right: 0;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    border-right: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  }
-  .sidebar:hover {
-    width: 100%;
-  }
-  
-  .sidebar-header {
-    padding: 0;
-    border-bottom: none;
-    gap: 0;
-    justify-content: center;
-  }
-  
-  .sidebar-text, .sidebar-text.title, .location-text {
+.fab:hover {
+  transform: scale(1.06);
+}
+
+/* Print Optimization */
+@media print {
+  .govt-header-root, .govt-nav-bar, .fab, .chat-window, button, .no-print {
     display: none !important;
   }
-  
-  .profile-icon-wrapper {
-    width: 36px;
-    height: 36px;
-    margin: 0 12px;
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
   }
-  
-  .sidebar-nav {
-    flex-direction: row;
-    padding: 0;
-    gap: 0;
-    width: 100%;
-    justify-content: space-around;
-  }
-  
-  .sidebar-item {
-    padding: 12px;
-    gap: 0;
-    flex: 1;
-    justify-content: center;
-    border-left: none !important;
-    border-bottom: 3px solid transparent;
-  }
-  
-  .sidebar-item:hover, .sidebar-item.active {
-    padding-left: 12px; /* Override desktop hover padding */
-    border-left: none !important;
-    border-bottom: 3px solid var(--primary-green-light);
-    background: rgba(255, 255, 255, 0.05);
-  }
-  
-  .main-content {
-    margin-left: 0 !important;
-    margin-bottom: 64px; /* Space for bottom nav */
-    width: 100% !important;
-  }
-  .sidebar:hover ~ .main-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-  
-  
-  /* Chat window mobile overrides */
-  .chat-window {
-    bottom: 80px; /* Above bottom nav */
-    right: 16px;
-    left: 16px;
-    width: auto;
-    height: calc(100vh - 100px);
-    max-height: 550px;
-  }
-  
-  .fab {
-    bottom: 80px; /* Above bottom nav */
-    right: 16px;
-    width: 56px;
-    height: 56px;
-  }
-  
-  .voice-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
   }
 }

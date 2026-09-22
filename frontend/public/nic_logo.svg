@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 45" width="160" height="45">
+  <!-- NIC Emblem -->
+  <rect x="2" y="2" width="41" height="41" rx="4" fill="#0A3161"/>
+  <circle cx="22.5" cy="22.5" r="14" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <circle cx="22.5" cy="22.5" r="4" fill="#F59E0B"/>
+  <line x1="22.5" y1="8.5" x2="22.5" y2="36.5" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="8.5" y1="22.5" x2="36.5" y2="22.5" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="12.5" y1="12.5" x2="32.5" y2="32.5" stroke="#FFFFFF" stroke-width="1"/>
+  <line x1="12.5" y1="32.5" x2="32.5" y2="12.5" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- Text -->
+  <text x="50" y="20" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="16" fill="#0A3161" letter-spacing="1">NIC</text>
+  <text x="50" y="32" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="700" font-size="9" fill="#475569">राष्ट्रीय सूचना विज्ञान केंद्र</text>
+  <text x="50" y="41" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="600" font-size="7.5" fill="#64748B">National Informatics Centre</text>
+</svg>

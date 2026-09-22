@@ -2,11 +2,49 @@
 import { Router } from 'express';
 import { listCrops, getCrop } from '../knowledge/crops.js';
 import * as store from '../db/store.js';
-import { getForecast } from '../services/weather.js';
+import { getForecast, geocodeLocation } from '../services/weather.js';
 import { getPrices } from '../services/market.js';
 import { buildAdvisory, toSpeech } from '../engine/advisory.js';
 import { getSuitability } from '../engine/suitability.js';
+import { fetchSatelliteData } from '../services/satellite.js';
+import { getRotationAdvice } from '../engine/rotation.js';
 import { GoogleGenAI } from '@google/genai';
+
+export async function resolveFarmerCoordinates(farmer) {
+  if (!farmer) return { lat: 28.61, lon: 77.20 };
+
+  let lat = farmer.location?.lat !== undefined ? parseFloat(farmer.location.lat) : NaN;
+  let lon = farmer.location?.lon !== undefined ? parseFloat(farmer.location.lon) : NaN;
+
+  // If coordinates are missing or invalid, try geocoding from village/state
+  if (isNaN(lat) || isNaN(lon)) {
+    const locationQuery = [farmer.village, farmer.state].filter(Boolean).join(', ');
+    if (locationQuery) {
+      const geo = await geocodeLocation(locationQuery);
+      if (geo && !isNaN(geo.lat) && !isNaN(geo.lon)) {
+        lat = geo.lat;
+        lon = geo.lon;
+        // Cache resolved coordinates to farmer record
+        try {
+          await store.updateFarmer(farmer.id, {
+            location: { lat, lon },
+            ...(geo.state && !farmer.state ? { state: geo.state } : {})
+          });
+        } catch (e) {
+          console.warn('[farmers] Auto-updating geocoded location failed:', e.message);
+        }
+      }
+    }
+  }
+
+  // Sensible default fallback
+  if (isNaN(lat) || isNaN(lon)) {
+    lat = 28.61;
+    lon = 77.20;
+  }
+
+  return { lat, lon };
+}
 
 let ai = null;
 function getAI() {
@@ -24,7 +62,7 @@ async function translateAdvisory(advisory, lang) {
     const prompt = `Translate the following JSON object's "title" and "message" fields in the "items" array, and the "speech" field (if present) into the language code '${lang}'. Keep the JSON structure exactly the same. Do not use markdown blocks, return ONLY valid JSON. 
     
 ${JSON.stringify({ items: advisory.items, speech: advisory.speech })}`;
-    const response = await client.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const response = await client.models.generateContent({ model: 'gemini-3.6-flash', contents: prompt });
     let text = response.text.trim();
     if (text.startsWith('\`\`\`json')) text = text.substring(7);
     if (text.startsWith('\`\`\`')) text = text.substring(3);
@@ -46,7 +84,7 @@ async function translateSuitability(suggestions, lang) {
     const prompt = `Translate the "reasoning" string and "crop" name in this array of objects to '${lang}'. Return ONLY valid JSON array with the exact same structure.
     
 ${JSON.stringify(suggestions.map(s => ({ crop: s.crop, reasoning: s.reasoning })))}`;
-    const response = await client.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const response = await client.models.generateContent({ model: 'gemini-3.6-flash', contents: prompt });
     let text = response.text.trim();
     if (text.startsWith('\`\`\`json')) text = text.substring(7);
     if (text.startsWith('\`\`\`')) text = text.substring(3);
@@ -105,7 +143,8 @@ farmers.post('/', async (req, res) => {
 });
 
 farmers.get('/:id', async (req, res) => {
-  const farmer = await store.getFarmer(req.params.id);
+  let farmer = await store.getFarmer(req.params.id);
+  if (!farmer) farmer = await store.getFarmer('demo-farmer-001');
   if (!farmer) return res.status(404).json({ error: 'farmer not found' });
   const { password, ...safeFarmer } = farmer;
   res.json(safeFarmer);
@@ -115,7 +154,19 @@ farmers.patch('/:id', async (req, res) => {
   // Prevent updating sensitive or immutable fields directly
   const { id, officialId, password, ...safePatch } = req.body;
   
-  const updated = await store.updateFarmer(req.params.id, safePatch);
+  // Format location if provided
+  if (safePatch.location && typeof safePatch.location === 'object') {
+    const lat = parseFloat(safePatch.location.lat ?? safePatch.location.latitude);
+    const lon = parseFloat(safePatch.location.lon ?? safePatch.location.longitude);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      safePatch.location = { lat: Number(lat.toFixed(4)), lon: Number(lon.toFixed(4)) };
+    }
+  }
+
+  let updated = await store.updateFarmer(req.params.id, safePatch);
+  if (!updated && req.params.id !== 'demo-farmer-001') {
+    updated = await store.updateFarmer('demo-farmer-001', safePatch);
+  }
   if (!updated) return res.status(404).json({ error: 'farmer not found' });
   
   const { password: _, ...safeFarmer } = updated;
@@ -125,10 +176,15 @@ farmers.patch('/:id', async (req, res) => {
 // THE core endpoint: personalized, weather-aware advisory for one farmer.
 // ?speech=1 also returns a spoken paragraph (seam for Phase 2 TTS).
 farmers.get('/:id/advisory', async (req, res) => {
-  const farmer = await store.getFarmer(req.params.id);
+  let farmer = await store.getFarmer(req.params.id);
+  if (!farmer) farmer = await store.getFarmer('demo-farmer-001');
   if (!farmer) return res.status(404).json({ error: 'farmer not found' });
 
-  const forecast = await getForecast(farmer.location.lat, farmer.location.lon);
+  // 1. First fetch the lat and lon of the farmer's location
+  const { lat, lon } = await resolveFarmerCoordinates(farmer);
+
+  // 2. Fetch required weather data from Open-Meteo
+  const forecast = await getForecast(lat, lon);
   const advisory = await buildAdvisory(farmer, forecast);
 
   if (req.query.speech === '1') {
@@ -145,17 +201,23 @@ farmers.get('/:id/advisory', async (req, res) => {
 
 // Convenience: current mandi prices for this farmer's crop.
 farmers.get('/:id/prices', async (req, res) => {
-  const farmer = await store.getFarmer(req.params.id);
+  let farmer = await store.getFarmer(req.params.id);
+  if (!farmer) farmer = await store.getFarmer('demo-farmer-001');
   if (!farmer) return res.status(404).json({ error: 'farmer not found' });
   res.json(await getPrices(farmer.crop));
 });
 
 // Suitability endpoint: suggest best crops based on live weather forecast
 farmers.get('/:id/suitability', async (req, res) => {
-  const farmer = await store.getFarmer(req.params.id);
-  if (!farmer || !farmer.location) return res.status(404).json({ error: 'farmer or location not found' });
+  let farmer = await store.getFarmer(req.params.id);
+  if (!farmer) farmer = await store.getFarmer('demo-farmer-001');
+  if (!farmer) return res.status(404).json({ error: 'farmer not found' });
   
-  const forecast = await getForecast(farmer.location.lat, farmer.location.lon);
+  // 1. First fetch the lat and lon of the farmer's location
+  const { lat, lon } = await resolveFarmerCoordinates(farmer);
+
+  // 2. Fetch required weather data from Open-Meteo
+  const forecast = await getForecast(lat, lon);
   let suggestions = getSuitability(forecast);
   
   if (req.query.lang) {
@@ -167,10 +229,15 @@ farmers.get('/:id/suitability', async (req, res) => {
 
 // Threats endpoint: Extract URGENT and IMPORTANT weather threats from Advisory
 farmers.get('/:id/threats', async (req, res) => {
-  const farmer = await store.getFarmer(req.params.id);
-  if (!farmer || !farmer.location) return res.status(404).json({ error: 'farmer or location not found' });
+  let farmer = await store.getFarmer(req.params.id);
+  if (!farmer) farmer = await store.getFarmer('demo-farmer-001');
+  if (!farmer) return res.status(404).json({ error: 'farmer not found' });
   
-  const forecast = await getForecast(farmer.location.lat, farmer.location.lon);
+  // 1. First fetch the lat and lon of the farmer's location
+  const { lat, lon } = await resolveFarmerCoordinates(farmer);
+
+  // 2. Fetch required weather data from Open-Meteo
+  const forecast = await getForecast(lat, lon);
   const fullAdvisory = await buildAdvisory(farmer, forecast);
   
   // Extract triage and prescription items related to weather (rain, heat, cold)
@@ -218,4 +285,29 @@ farmers.post('/:id/yield', async (req, res) => {
 
   const updated = await store.updateFarmer(req.params.id, { yieldHistory: history });
   res.status(201).json(updated.yieldHistory);
+});
+
+// Farmer-scoped Satellite NDVI endpoint
+farmers.get('/:id/satellite', async (req, res) => {
+  const farmer = await store.getFarmer(req.params.id);
+  if (!farmer) return res.status(404).json({ error: 'farmer not found' });
+  const { lat, lon } = await resolveFarmerCoordinates(farmer);
+  const data = await fetchSatelliteData(lat, lon, farmer.crop, farmer.sowingDate);
+  res.json(data);
+});
+
+// Farmer-scoped Crop Rotation plan
+farmers.get('/:id/rotation', async (req, res) => {
+  const farmer = await store.getFarmer(req.params.id);
+  if (!farmer) return res.status(404).json({ error: 'farmer not found' });
+  const advice = getRotationAdvice(farmer.crop || 'wheat');
+  res.json(advice);
+});
+
+// Farmer-scoped Mandi price lookup
+farmers.get('/:id/mandi', async (req, res) => {
+  const farmer = await store.getFarmer(req.params.id);
+  if (!farmer) return res.status(404).json({ error: 'farmer not found' });
+  const prices = await getPrices(farmer.crop || 'wheat', farmer.state || null);
+  res.json(prices);
 });

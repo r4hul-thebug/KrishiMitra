@@ -4,6 +4,7 @@ import { getForecast } from '../services/weather.js';
 import { fetchSatelliteData } from '../services/satellite.js';
 import { getCrop } from '../knowledge/crops.js';
 import { cropDetails } from '../knowledge/crop_details.js';
+import { resolveFarmerCoordinates } from './farmers.js';
 
 import { GoogleGenAI } from '@google/genai';
 
@@ -31,17 +32,18 @@ chat.post('/', async (req, res) => {
   let weatherSummary = '';
   let satelliteSummary = '';
   
-  if (farmer.location) {
-    try {
-      const forecast = await getForecast(farmer.location.lat, farmer.location.lon);
-      const today = forecast.daily[0];
-      weatherSummary = `Temp: ${today.tMinC}°C to ${today.tMaxC}°C. Rain: ${today.rainMm}mm.`;
-      
-      const sat = await fetchSatelliteData(farmer.location.lat, farmer.location.lon);
-      if (sat) satelliteSummary = `NDVI: ${sat.ndvi}. ${sat.analysis}`;
-    } catch (e) {
-      console.warn("Context gathering failed", e);
+  try {
+    const { lat, lon } = await resolveFarmerCoordinates(farmer);
+    const forecast = await getForecast(lat, lon);
+    const today = forecast.daily?.[0];
+    if (today) {
+      weatherSummary = `Temp: ${today.tMinC}°C to ${today.tMaxC}°C. Rain: ${today.rainMm}mm (Chance: ${today.rainChance}%). Source: ${forecast.source}.`;
     }
+    
+    const sat = await fetchSatelliteData(lat, lon);
+    if (sat) satelliteSummary = `NDVI: ${sat.ndvi}. ${sat.analysis}`;
+  } catch (e) {
+    console.warn("Context gathering failed in chat:", e.message);
   }
 
   // 2. LLM Processing
@@ -92,7 +94,7 @@ CRITICAL: You MUST write your ENTIRE response in the language code: '${langCode}
       }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         contents: contents
       });
 
@@ -189,7 +191,7 @@ CRITICAL: You MUST write your ENTIRE response in the language code: '${langCode}
       responseText = `I am pulling your latest ISRO Bhuvan satellite imagery... ${satelliteSummary || 'Currently, I cannot reach the satellite for your coordinates.'}. I recommend physically scouting the field tomorrow morning.`;
     }
     else if (msgLower.match(/(hello|hi|namaste|hey|morning|evening)/)) {
-      responseText = `Namaste! I am KrishiMitra, your AI agricultural assistant. I have loaded your profile for ${crop.name.en}. I can see your local weather is ${weatherSummary}. How can I help you manage your crop today? You can ask me about **diseases**, **pests**, **fertilizers**, **sowing**, or attach images for diagnosis!`;
+      responseText = `Namaste! I am KrishiMitraaz, your AI agricultural assistant. I have loaded your profile for ${crop.name.en}. I can see your local weather is ${weatherSummary}. How can I help you manage your crop today? You can ask me about **diseases**, **pests**, **fertilizers**, **sowing**, or attach images for diagnosis!`;
     }
     else {
       // Advanced Fallback: Search the entire crop profile for the user's keywords

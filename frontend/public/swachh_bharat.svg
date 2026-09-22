@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 60" width="170" height="60">
+  <!-- Round Spectacles of Mahatma Gandhi -->
+  <circle cx="40" cy="30" r="18" fill="#FFFFFF" stroke="#0A3161" stroke-width="3"/>
+  <circle cx="90" cy="30" r="18" fill="#FFFFFF" stroke="#0A3161" stroke-width="3"/>
+  <!-- Bridge connecting spectacles -->
+  <path d="M58 30 C65 24 73 24 72 30" fill="none" stroke="#0A3161" stroke-width="3"/>
+  <!-- Left spectacle temple -->
+  <line x1="22" y1="30" x2="8" y2="24" stroke="#0A3161" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Right spectacle temple -->
+  <line x1="108" y1="30" x2="122" y2="24" stroke="#0A3161" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Words in spectacles lenses -->
+  <text x="40" y="34" text-anchor="middle" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="900" font-size="9.5" fill="#0A3161">स्वच्छ</text>
+  <text x="90" y="34" text-anchor="middle" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="900" font-size="9.5" fill="#0A3161">भारत</text>
+
+  <!-- Tagline below -->
+  <text x="65" y="54" text-anchor="middle" font-family="'Noto Sans Devanagari', Arial, sans-serif" font-weight="700" font-size="8" fill="#D97706">एक कदम स्वच्छता की ओर</text>
+</svg>
