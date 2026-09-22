@@ -14,7 +14,7 @@ export default function NotFound() {
           The requested government advisory page or resource could not be located in the KrishiMitraaz system. 
           The link may be broken, or the page may have been moved.
         </p>
-        <Link to="/" style={styles.button}>
+        <Link to="/dashboard" style={styles.button}>
           <ArrowLeft size={18} />
           Return to Dashboard
         </Link>

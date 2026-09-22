@@ -33,7 +33,11 @@ app.use('/api/farmers', farmers);
 app.use('/api/chat', chat);
 app.use('/api', reference);
 
-const frontendDist = path.resolve('frontend/dist');
+let frontendDist = path.resolve('frontend/dist');
+if (!fs.existsSync(frontendDist) && fs.existsSync(path.resolve('dist'))) {
+  frontendDist = path.resolve('dist');
+}
+
 if (!fs.existsSync(frontendDist)) {
   console.log('Building frontend assets...');
   try {
@@ -42,6 +46,10 @@ if (!fs.existsSync(frontendDist)) {
   } catch (e) {
     console.error('Failed to build frontend:', e.message);
   }
+}
+
+if (!fs.existsSync(frontendDist) && fs.existsSync(path.resolve('dist'))) {
+  frontendDist = path.resolve('dist');
 }
 
 if (fs.existsSync(frontendDist)) {

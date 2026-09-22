@@ -167,7 +167,7 @@ export default function AuthScreen({ setToken }) {
       localStorage.setItem('krishimitraaz_farmer_id', farmer.id);
       
       setToken(token);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || err.message || (isHi ? 'सत्यापन विफल रहा। विवरण जांचें।' : 'Authentication failed. Please verify credentials.'));
     } finally {
@@ -453,7 +453,7 @@ export default function AuthScreen({ setToken }) {
                   localStorage.setItem('krishimitraaz_token', 'krishimitraaz_demo_token');
                   localStorage.setItem('krishimitraaz_farmer_id', 'demo-farmer-001');
                   setToken('krishimitraaz_demo_token');
-                  navigate('/dashboard');
+                  navigate('/dashboard', { replace: true });
                 }}
                 className="gov-btn gov-btn-secondary"
                 style={{ width: '100%', padding: '8px', fontSize: '0.82rem', justifyContent: 'center', borderColor: '#004D25', color: '#004D25' }}

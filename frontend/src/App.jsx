@@ -44,53 +44,45 @@ function App() {
             />
             <Route 
               path="/" 
-              element={
-                token ? <Navigate to="/dashboard" replace /> : (
-                  <>
-                    <AuthScreen setToken={setToken} />
-                    <GovtFooter />
-                  </>
-                )
-              } 
+              element={<Navigate to="/dashboard" replace />} 
             />
             <Route 
               path="/*"
               element={
-                !token ? <Navigate to="/" replace /> : (
-                  <div className="app-portal-layout" style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 54.5px)' }}>
-                    <Sidebar 
-                      setToken={setToken} 
-                      isCollapsed={isCollapsed} 
-                      setIsCollapsed={setIsCollapsed} 
-                    />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                      <main 
-                        className="portal-main-area"
-                        style={{ 
-                          flex: 1, 
-                          padding: '1.5rem', 
-                          background: '#F8FAFC'
-                        }}
-                      >
-                        <Routes>
-                          <Route path="dashboard" element={<Dashboard setToken={setToken} />} />
-                          <Route path="mandi" element={<MandiPrices />} />
-                          <Route path="satellite" element={<SatelliteView />} />
-                          <Route path="rotation" element={<CropRotation />} />
-                          <Route path="disease" element={<CropDoctor />} />
-                          <Route path="calculator" element={<YieldCalculator />} />
-                          <Route path="schemes" element={<GovtSchemes />} />
-                          <Route path="suggestions" element={<Suggestions />} />
-                          <Route path="soil" element={<SoilHealthCard />} />
-                          <Route path="helpline" element={<KisanHelpline />} />
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </main>
-                      <GovtFooter />
-                    </div>
-                    <FloatingChat />
+                <div className="app-portal-layout" style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 54.5px)' }}>
+                  <Sidebar 
+                    token={token}
+                    setToken={setToken} 
+                    isCollapsed={isCollapsed} 
+                    setIsCollapsed={setIsCollapsed} 
+                  />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <main 
+                      className="portal-main-area"
+                      style={{ 
+                        flex: 1, 
+                        padding: '1.5rem', 
+                        background: '#F8FAFC'
+                      }}
+                    >
+                      <Routes>
+                        <Route path="dashboard" element={<Dashboard token={token} setToken={setToken} />} />
+                        <Route path="mandi" element={<MandiPrices />} />
+                        <Route path="satellite" element={<SatelliteView />} />
+                        <Route path="rotation" element={<CropRotation />} />
+                        <Route path="disease" element={<CropDoctor />} />
+                        <Route path="calculator" element={<YieldCalculator />} />
+                        <Route path="schemes" element={<GovtSchemes />} />
+                        <Route path="suggestions" element={<Suggestions />} />
+                        <Route path="soil" element={<SoilHealthCard />} />
+                        <Route path="helpline" element={<KisanHelpline />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </main>
+                    <GovtFooter />
                   </div>
-                )
+                  <FloatingChat />
+                </div>
               }
             />
           </Routes>

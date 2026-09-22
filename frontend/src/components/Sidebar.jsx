@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, Store, Orbit, Repeat, Stethoscope, 
   Calculator, Landmark, Lightbulb, FlaskConical, Headphones,
-  ChevronLeft, ChevronRight, LogOut, ShieldCheck, PhoneCall
+  ChevronLeft, ChevronRight, LogOut, LogIn, ShieldCheck, PhoneCall
 } from 'lucide-react';
 import axios from 'axios';
 import '../index.css';
@@ -11,7 +11,7 @@ import { API_URL } from '../config';
 import ProfileModal from './ProfileModal';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export default function Sidebar({ setToken, isCollapsed, setIsCollapsed }) {
+export default function Sidebar({ token, setToken, isCollapsed, setIsCollapsed }) {
   const { currentLang } = useLanguage();
   const isHi = currentLang === 'hi';
   const location = useLocation();
@@ -92,7 +92,7 @@ export default function Sidebar({ setToken, isCollapsed, setIsCollapsed }) {
     localStorage.removeItem('krishimitraaz_farmer_state');
     if (setToken) setToken(null);
     setIsProfileOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const navItems = [
@@ -305,30 +305,57 @@ export default function Sidebar({ setToken, isCollapsed, setIsCollapsed }) {
             </a>
           )}
 
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
-              gap: '8px',
-              background: 'none',
-              border: 'none',
-              color: '#DC2626',
-              fontSize: '0.76rem',
-              fontWeight: 700,
-              padding: '6px 4px',
-              cursor: 'pointer',
-              borderRadius: '3px'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-            title={isHi ? 'लॉगआउट' : 'Sign Out'}
-          >
-            <LogOut size={15} />
-            {!isCollapsed && <span>{isHi ? 'लॉगआउट / बाहर निकलें' : 'Sign Out'}</span>}
-          </button>
+          {Boolean(token) ? (
+            <button
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                gap: '8px',
+                background: 'none',
+                border: 'none',
+                color: '#DC2626',
+                fontSize: '0.76rem',
+                fontWeight: 700,
+                padding: '6px 4px',
+                cursor: 'pointer',
+                borderRadius: '3px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#FEF2F2'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              title={isHi ? 'लॉगआउट' : 'Sign Out'}
+            >
+              <LogOut size={15} />
+              {!isCollapsed && <span>{isHi ? 'लॉगआउट / बाहर निकलें' : 'Sign Out'}</span>}
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                gap: '8px',
+                background: '#ECFDF5',
+                border: '1px solid #A7F3D0',
+                color: '#047857',
+                fontSize: '0.76rem',
+                fontWeight: 800,
+                padding: '6px 8px',
+                cursor: 'pointer',
+                borderRadius: '4px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#D1FAE5'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#ECFDF5'}
+              title={isHi ? 'किसान लॉगिन / पंजीकरण' : 'Farmer Login / Register'}
+            >
+              <LogIn size={15} />
+              {!isCollapsed && <span>{isHi ? 'किसान लॉगिन करें' : 'Farmer Sign In'}</span>}
+            </button>
+          )}
         </div>
       </aside>
 

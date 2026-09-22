@@ -6,9 +6,9 @@ import {
   RefreshCw, Volume2, AlertTriangle, Store, 
   Orbit, Repeat, Stethoscope, CloudRain, Landmark,
   Calculator, Lightbulb, Headphones, ShieldCheck, 
-  TrendingUp, Calendar, MapPin, CheckCircle2, User,
-  CheckSquare, Square, Play, Pause, ExternalLink, ArrowRight,
-  Sparkles, Award, ChevronRight, Activity, Flame, Shield, Sun, Clock
+  TrendingUp, Calendar, MapPin, CheckCircle2,
+  CheckSquare, Square, Pause, ArrowRight,
+  Sparkles, Award, Sun
 } from 'lucide-react';
 import '../index.css';
 import { API_URL } from '../config';
@@ -33,18 +33,11 @@ function getIconForTitle(title) {
   return <Leaf size={20} />;
 }
 
-export default function Dashboard({ setToken }) {
+export default function Dashboard({ token, setToken: _setToken }) {
   const { t, currentLang } = useLanguage();
   const isHi = currentLang === 'hi';
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('krishimitraaz_token');
-    if (!token) {
-      navigate('/', { replace: true });
-    }
-  }, [navigate]);
-  
   const [advisory, setAdvisory] = useState(null);
   const [threats, setThreats] = useState([]);
   const [weatherForecast, setWeatherForecast] = useState(null);
@@ -104,10 +97,18 @@ export default function Dashboard({ setToken }) {
         } catch {}
       }
     } catch (err) {
-      if (err.response && err.response.status === 404) {
-        localStorage.removeItem('krishimitraaz_farmer_id');
-        window.location.href = '/';
-        return;
+      if (err.response && err.response.status === 404 && farmerId !== 'demo-farmer-001') {
+        console.warn('Farmer profile not found, switching to demo profile gracefully...');
+        localStorage.setItem('krishimitraaz_farmer_id', 'demo-farmer-001');
+        try {
+          const [advisoryRes, threatsRes] = await Promise.all([
+            axios.get(`${API_URL}/farmers/demo-farmer-001/advisory?speech=1&lang=${currentLang}`),
+            axios.get(`${API_URL}/farmers/demo-farmer-001/threats?lang=${currentLang}`)
+          ]);
+          setAdvisory(advisoryRes.data);
+          setThreats(threatsRes.data.threats || []);
+          return;
+        } catch {}
       }
       setError(err.message || 'Failed to fetch data');
     } finally {
@@ -181,6 +182,48 @@ export default function Dashboard({ setToken }) {
   return (
     <div className="container" style={{ padding: '1.5rem 1rem 3rem', maxWidth: '1280px', margin: '0 auto' }}>
       
+      {!token && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '10px 16px',
+          background: '#EFF6FF',
+          border: '1px solid #BFDBFE',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '10px',
+          fontSize: '0.85rem',
+          color: '#1E40AF'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '1.1rem' }}>🌾</span>
+            <span>
+              <strong>{isHi ? 'नागरिक प्रदर्शन परामर्श (अतिथि मोड)' : 'Citizen Agromet Advisory (Guest Mode)'}:</strong>{' '}
+              {isHi 
+                ? 'आप क्षेत्रीय प्रदर्शन परामर्श देख रहे हैं। अपने मृदा स्वास्थ्य कार्ड और आधार को जोड़ने के लिए लॉगिन करें।' 
+                : 'Viewing regional agromet demonstration. Sign in or register to link your personalized Soil Health Card & land records.'}
+            </span>
+          </div>
+          <button
+            onClick={() => navigate('/login')}
+            style={{
+              background: '#2563EB',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '6px 14px',
+              borderRadius: '6px',
+              fontWeight: 700,
+              fontSize: '0.8rem',
+              cursor: 'pointer'
+            }}
+          >
+            {isHi ? 'किसान लॉगिन / पंजीकरण →' : 'Farmer Sign In / Register →'}
+          </button>
+        </div>
+      )}
+
       {/* 1. Official Government Hero Header Banner (Deep Indian Navy-Emerald Gradient with Crisp High Contrast) */}
       <div className="header-banner" style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.25rem' }}>

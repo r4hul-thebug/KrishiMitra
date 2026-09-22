@@ -41,14 +41,17 @@ export default function GovtHeader({ token, setToken }) {
     if (setToken) setToken(null);
     setIsFarmerMenuOpen(false);
     setIsProfileModalOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const handleBrandClick = () => {
     if (isAuthenticated) {
       navigate('/dashboard');
     } else {
-      navigate('/');
+      if (location.pathname === '/login') {
+        return;
+      }
+      navigate('/dashboard');
     }
   };
 
@@ -406,7 +409,7 @@ export default function GovtHeader({ token, setToken }) {
             </div>
           ) : (
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/login')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
