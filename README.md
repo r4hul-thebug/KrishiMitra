@@ -1,51 +1,76 @@
-# 🌱 KrishiMitraaz — Smart Crop Advisory System
+# 🌱 KrishiMitraaz — Smart Crop Advisory & National Farmer Portal
 
-> **An AI-powered, full-stack web platform providing real-time, weather-aware crop advisory and financial projections for small & marginal farmers.** Features a professional government-style dashboard, NDVI satellite analysis, multi-year yield tracking, and voice-ready summary generation.
+> **An enterprise-grade, full-stack AI agronomy platform providing real-time, weather-aware crop advisories, satellite NDVI vegetation analysis, e-NAM market price intelligence, disease diagnostics, and financial projections for Indian farmers.** Designed according to Government of India (NIC/ICAR) digital design standards with high-contrast accessibility, regional language support (Hindi, English & 10+ languages), and voice-ready summary generation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests: 22 Passing](https://img.shields.io/badge/Tests-22%2F22%20Passing-brightgreen.svg)](#-testing)
+[![Code Quality: Oxlint](https://img.shields.io/badge/Linter-Clean-blue.svg)](#-testing)
+[![Runtime: Node.js 20+](https://img.shields.io/badge/Runtime-Node.js%2020%2B-forestgreen.svg)](#-quick-start)
 
 ---
 
-## ✨ Key Features
+## ✨ Integrated Portal Modules
 
-| Feature | Description |
-|---|---|
-| 🏛️ **Government Dashboard** | Professional NIC-style enterprise UI — solid theme, high contrast, accessible |
-| 🌾 **AI Advisory Engine** | Weather-aware, stage-specific crop advice for **39 major Indian crops** |
-| 📡 **Satellite Integration** | NDVI crop health analysis via ISRO Bhuvan API |
-| 🎤 **Voice-Ready Summaries** | Structured output designed for Bhashini TTS (22 Indian languages) with smart auto-language detection |
-| 💰 **Yield Calculator** | Real-time financial projections — cost, revenue, MSP profit per acre |
-| 🗺️ **Precision Geolocation** | Auto-detects village/state via GPS + Nominatim reverse geocoding |
-| 📱 **Mobile Responsive** | Fully fluid UI that transforms into an app-like bottom navigation on phones |
-| 📊 **Multi-Year Yield History** | Track and compare harvest data across multiple seasons |
-| 🤖 **Advanced AI Chatbot** | Powered by **Google Gemini**, providing highly-contextual conversational agronomy advice and multi-modal image disease diagnosis (supporting up to 50MB image payloads) |
-| 🔐 **Secure Authentication** | JWT-based login with PM Kisan / Aadhaar Official ID (with auto-logout on stale session/404 handling) |
-| 🌍 **Comprehensive i18n** | Full regional language support for 10 Indian languages (Hindi, Marathi, Punjabi, Gujarati, Tamil, Telugu, Bengali, Kannada, Malayalam, Odia, Assamese, English) with location-based language auto-detection and on-the-fly LLM translation. |
+| Module | Route | Description |
+|---|---|---|
+| 🏛️ **National Farmer Dashboard** | `/dashboard` | Directives tab, stage-wise agronomy alerts, active hazard warnings, and quick services |
+| 🌾 **Real-Time Advisory Engine** | `/dashboard` | Weather-aware, GDD-calibrated crop advice across **39 major Indian crops** |
+| 🏬 **e-NAM Live Mandi Prices** | `/mandi` | APMC market prices, minimum/maximum/modal modal prices, and MSP support benchmark |
+| 🛰️ **ISRO Bhuvan Satellite NDVI** | `/satellite` | Sentinel-2 & Bhuvan NDVI canopy vigor, vegetation health & moisture index |
+| 🔄 **Crop Rotation & Soil Rejuvenation** | `/rotation` | Kharif → Rabi → Zaid seasonal sequencing to biologically fix nitrogen & disrupt pest cycles |
+| 🩺 **Crop Doctor Diagnostics Clinic** | `/disease` | Pathogen triage, CPCB-approved bio-controls, and acreage NPK split dosage calculator |
+| 💰 **Yield & Profitability Calculator** | `/calculator` | Acreage input cost breakdown, market revenue projections & net profit estimator |
+| 📜 **Govt DBT Schemes Directory** | `/schemes` | Central & State agricultural schemes (PM-KISAN, PMFBY, PM-KUSUM, KCC, AIF) |
+| 🌍 **Agro-Climatic Suitability** | `/suggestions` | Climate-driven crop matching based on soil type, precipitation, and thermal range |
+| 🧪 **Digital Soil Health Card** | `/soil` | 12-parameter soil chemical analysis, deficiency alerts & organic carbon advisories |
+| 📞 **Kisan Emergency Toll-Free Desk** | `/helpline` | 24x7 Kisan Call Centre (1800-180-1551), PMFBY 72-hour crop loss hotline & NDMA SOPs |
+| 🤖 **Gemini AI Agronomy Chatbot** | Overlay | Conversational advisory assistant with multi-modal leaf photo diagnosis (up to 50MB) |
+
+---
+
+## ⚡ Performance & Production Architecture
+
+- **Route-Level Code Splitting**: All sub-pages and modal tools are loaded on-demand via `React.lazy()` and `Suspense`, isolating heavy dependencies to minimize First Contentful Paint (FCP).
+- **Zero CLS Skeletons**: Dynamic `PageSkeleton` and `DashboardTabSkeleton` placeholders prevent Cumulative Layout Shift during data fetching and route transitions.
+- **HTTP Response Compression**: Integrated `compression` middleware with automatic Brotli/Gzip encoding for static assets and API payloads above 1KB.
+- **Optimized Cache Control**: Production static assets are served with 1-year immutable caching (`max-age=31536000`), while HTML shells enforce `no-cache` to ensure instantaneous rollouts.
+- **Infinite Loop-Proof Routing**: Hardened route guard middleware intercepts 404s and unhandled 500 exceptions, redirecting browser navigation gracefully to `/login` without infinite recursion.
 
 ---
 
 ## 🚀 Quick Start
 
-**Zero external database setup required for local demo testing.** The backend uses a PostgreSQL database natively (via `pg`), and the frontend is a blazing-fast React Vite app.
+### Prerequisites
+- **Node.js**: v20 or higher
+- **npm**: v10 or higher (or **bun**)
 
-### 1. Backend API
-
+### 1. Install & Seed
 ```bash
+git clone https://github.com/your-username/krishimitraaz.git
 cd krishimitraaz
+
+# Install all dependencies (workspaces automatically handled)
 npm install
-npm run seed        # Seed demo farmers
-npm start           # http://localhost:10000
+
+# Seed demo farmers & agronomy knowledge base
+npm run seed
 ```
 
-### 2. Frontend Dashboard
-
+### 2. Run Full-Stack Development Server
 ```bash
-cd krishimitraaz/frontend
-npm install
-npm run dev         # http://localhost:5173
+# Starts the unified full-stack server on port 3000
+npm run dev
 ```
+Open **http://localhost:3000** in your browser.
 
-Log in with any seeded Official ID, or register a new farmer account.
+Or run frontend and backend independently:
+```bash
+# Terminal 1: Backend API
+node src/server.js
+
+# Terminal 2: Frontend Vite
+cd frontend && npm run dev
+```
 
 ---
 
@@ -53,130 +78,107 @@ Log in with any seeded Official ID, or register a new farmer account.
 
 ```
 krishimitraaz/
-├── src/
-│   ├── server.js              # Express API entry point
-│   ├── config.js              # Environment configuration
-│   ├── routes/
-│   │   ├── auth.js            # JWT registration & login
-│   │   ├── farmers.js         # Farmer CRUD, advisory, threats
-│   │   ├── chat.js            # AI chatbot endpoint
-│   │   └── reference.js       # Crop data reference API
-│   ├── engine/
-│   │   ├── advisory.js        # Core advisory engine + toSpeech()
-│   │   ├── suitability.js     # Climate-based crop recommendations
-│   │   ├── disease.js         # Disease detection logic
-│   │   └── rotation.js        # Crop rotation calendar
-│   ├── knowledge/
-│   │   ├── crops.js           # Crop knowledge base
-│   │   └── crop_details.js    # Detailed crop economics (MSP, costs)
-│   ├── services/
-│   │   ├── weather.js         # Weather provider (mock / OpenWeather)
-│   │   ├── satellite.js       # NDVI satellite data (mock / Bhuvan)
-│   │   └── market.js          # Market price provider (mock / Agmarknet)
-│   └── db/
-│       ├── store.js           # PostgreSQL persistence layer
-│       └── seed.js            # Demo data seeder
-├── frontend/
+├── frontend/                     # React 19 + Vite Frontend SPA
 │   ├── src/
-│   │   ├── App.jsx            # Router & layout
-│   │   ├── pages/             # Auth, Dashboard, Suggestions, YieldCalculator
-│   │   ├── components/        # Sidebar, ProfileModal, FloatingChat
-│   │   ├── config.js          # API URL configuration
-│   │   └── index.css          # Design system (CSS variables, theme)
-│   └── ...
+│   │   ├── components/           # GovtHeader, GovtFooter, Sidebar, Skeletons, Chat
+│   │   ├── contexts/             # LanguageContext (bilingual i18n layer)
+│   │   ├── pages/                # 11 Portal modules (Dashboard, Mandi, Doctor, etc.)
+│   │   ├── App.jsx               # Route definitions & Suspense boundaries
+│   │   └── main.jsx              # React DOM entry point
+│   ├── index.html                # High-contrast accessible HTML shell with SEO meta
+│   ├── package.json              # Frontend dependencies (React 19, Lucide, Axios)
+│   └── vite.config.js            # Rollup chunking & build optimization
+├── src/                          # Express Backend & Agronomy Engine
+│   ├── db/
+│   │   ├── store.js              # Persistence store (PostgreSQL + in-memory fallback)
+│   │   └── seed.js               # Demo farmers, mandi benchmarks & soil records
+│   ├── engine/
+│   │   ├── advisory.js           # Core weather-aware advisory algorithm & toSpeech()
+│   │   ├── disease.js            # Pathogen & bio-control rules
+│   │   ├── rotation.js           # Multi-season crop diversification planner
+│   │   └── suitability.js        # Agro-climatic matching engine
+│   ├── knowledge/
+│   │   ├── crops.js              # 39 Indian crops knowledge base
+│   │   └── crop_details.js       # Agronomy parameters, MSP values, water demand
+│   ├── middleware/
+│   │   └── unifiedRouteHandler.js# 404 & 500 guard with recursion prevention
+│   ├── routes/
+│   │   ├── auth.js               # JWT login & registration
+│   │   ├── chat.js               # Google Gemini generative advisory endpoint
+│   │   ├── farmers.js            # Farmer CRUD, advisory generation & threats
+│   │   └── reference.js          # Mandi, soil, disease & schemes reference APIs
+│   ├── services/
+│   │   ├── market.js             # e-NAM / Agmarknet APMC market rates
+│   │   ├── satellite.js          # ISRO Bhuvan & Sentinel NDVI simulation
+│   │   └── weather.js            # 5-day agro-meteorological forecasting
+│   ├── config.js                 # Environment variables loader
+│   └── server.js                 # Express server configuration & compression
 ├── test/
-│   └── engine.test.js         # 6 unit tests for advisory engine
-├── README.md
-├── ROADMAP.md
-└── .env.example
+│   ├── engine.test.js            # Agronomy engine unit tests (16 tests)
+│   └── route-middleware.test.js  # Redirect & error fallback tests (6 tests)
+├── server.ts                     # Cloud Run / container runner entrypoint
+├── metadata.json                 # AI Studio deployment metadata
+├── package.json                  # Root orchestration & scripts
+├── README.md                     # Documentation
+└── .env.example                  # Environment configuration template
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Verification
+
+The test suite includes 22 automated unit and integration tests verifying agronomic calculation accuracy, stage classification, weather stress detection, and unified routing fallback behavior:
 
 ```bash
-# Backend engine tests (16/16 passing - rigorously tested!)
-node --test test/engine.test.js
+# Run all automated tests
+npm test
 
-# Frontend lint (0 errors, 0 warnings)
-cd frontend && npm run lint
+# Build production bundles
+npm run build
+
+# Run Oxlint validation
+npm run lint
 ```
 
 ---
 
-## 🛠️ Environment Configuration
+## 🛠️ Environment Variables
 
-### Frontend (`.env` in `frontend/`)
-```env
-VITE_API_URL=http://localhost:10000/api
-```
+Copy `.env.example` to `.env` in the root folder:
 
-### Backend (`.env` in root)
 ```env
-PORT=10000
-DATABASE_URL=postgresql://neondb_owner:... # Your Neon Postgres connection string
-GEMINI_API_KEY=your_gemini_api_key         # Google Gemini API key for image analysis
-WEATHER_PROVIDER=mock                      # or "openweather"
+PORT=3000
+DATABASE_URL=postgresql://user:password@host:5432/dbname   # Optional: defaults to in-memory fallback
+GEMINI_API_KEY=your_gemini_api_key                         # Required for multimodal leaf photo chat
+WEATHER_PROVIDER=mock                                      # or "openweather"
 OPENWEATHER_API_KEY=your_key
-MARKET_PROVIDER=mock                       # or "agmarknet"
+MARKET_PROVIDER=mock                                       # or "agmarknet"
 DATAGOV_API_KEY=your_key
 ```
 
-All providers have mock fallbacks (except Gemini which requires an API key for image features).
-
 ---
 
-## 🌍 Deployment
+## 🌐 Production Deployment
 
-KrishiMitraaz is optimized for seamless deployment across modern cloud platforms.
+### Option 1: Docker / Cloud Run / Single Container (Recommended)
+KrishiMitraaz is structured to build and serve the client and API from a single container:
 
-### Backend (Render / Heroku)
-1. Push your code to GitHub.
-2. Create a new Web Service on Render and link your repository.
-3. In Render, create a free **PostgreSQL Database** and copy the internal or external Connection String.
-3. Set the Root Directory to the base folder (or leave blank).
-4. Build Command: `npm install`
-5. Start Command: `node --env-file=.env src/server.js` (or add `DATABASE_URL` in Render Environment variables and run `node src/server.js`)
-6. Add your environment variables (`DATABASE_URL`, `WEATHER_PROVIDER`, etc.).
-7. Once deployed, copy the backend URL (e.g., `https://krishimitra-backend.onrender.com`).
+```bash
+# Build production frontend
+npm run build
 
-### Frontend (Vercel / Netlify)
-1. Go to Vercel and import your GitHub repository.
-2. Set the **Framework Preset** to `Vite`.
-3. Set the **Root Directory** to `frontend`.
-4. In Environment Variables, add `VITE_API_URL` and set it to your Render backend URL (e.g., `https://krishimitra-backend.onrender.com/api`).
-5. Click **Deploy**. 
+# Start production server
+npm start
+```
+The server automatically detects `./frontend/dist`, serves static hashed assets with optimal caching, and routes API endpoints seamlessly under `/api`.
 
-*Note: If you update `VITE_API_URL` after deployment, you must manually trigger a Redeploy in the Vercel dashboard for the changes to take effect.*
-
----
-
-## 🏗️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, Vite 8, React Router 7 |
-| Backend | Node.js, Express 4 (`express-async-errors`), PostgreSQL (pg) |
-| Auth | JWT (jsonwebtoken + bcryptjs) |
-| Icons | Lucide React |
-| Linting | Oxlint |
-| Testing | Node.js built-in test runner |
-
----
-
-## 🗺️ Roadmap
-
-| Phase | Status | Scope |
-|---|---|---|
-| **Phase 1** | ✅ Complete | Full-stack dashboard, JWT auth, advisory engine, yield calculator, crop suitability, voice summaries |
-| **Phase 2** | ✅ Complete | LLM chatbot fully integrated with Gemini 1.5 Flash for text, multi-modal disease detection, and dynamic backend advisory translation |
-| **Phase 3** | ✅ Complete | Dynamic layout adaptability and robust UI multi-lingual localization across 10+ regional Indian languages (i18n context layer) |
-| **Phase 4** | 🔜 Next | Bhashini STT/TTS integration, real-time Mandi prices, scheme recommendations |
-| **Phase 5** | 📋 Planned | Offline-first caching, IVR/WhatsApp channels, feature phone support |
+### Option 2: Split Deployment (Vercel Frontend + Render/Railway API)
+1. **Frontend**: Deploy `./frontend` to Vercel. Set `VITE_API_URL` to `https://your-api.onrender.com/api`.
+2. **Backend**: Deploy root repository to Render or Railway. Set Start Command to `npm start`. Set `PORT` and `DATABASE_URL`.
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+

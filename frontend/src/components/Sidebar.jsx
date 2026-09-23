@@ -41,46 +41,6 @@ export default function Sidebar({ token, setToken, isCollapsed, setIsCollapsed }
         .catch(err => console.error('Failed to load farmer info', err));
     };
 
-    const updateLocationOnServer = async (lat, lon) => {
-      try {
-        const patchRes = await axios.patch(`${API_URL}/farmers/${farmerId}`, {
-          location: { lat, lon }
-        });
-        const updated = patchRes.data;
-        
-        let preciseLocation = '';
-        let detectedState = '';
-        try {
-          const res = await axios.get(`${API_URL}/location/reverse?lat=${lat}&lon=${lon}`, { timeout: 3500 });
-          if (res.data) {
-            detectedState = res.data.state || '';
-            preciseLocation = res.data.locationStr || '';
-          }
-        } catch {}
-
-        if (detectedState) {
-          localStorage.setItem('krishimitraaz_farmer_state', detectedState);
-          await axios.patch(`${API_URL}/farmers/${farmerId}`, { state: detectedState }).catch(() => {});
-        } else if (updated?.state) {
-          localStorage.setItem('krishimitraaz_farmer_state', updated.state);
-        }
-
-        const fallbackLoc = (updated?.village && updated?.state)
-          ? `${updated.village}, ${updated.state}`
-          : `Lat: ${Number(lat).toFixed(2)}, Lon: ${Number(lon).toFixed(2)}`;
-
-        setFarmerData(prev => ({
-          ...prev,
-          ...(updated || {}),
-          state: detectedState || updated?.state || prev.state,
-          location: { lat, lon },
-          locationStr: preciseLocation || fallbackLoc
-        }));
-      } catch (e) {
-        console.warn('Location patch failed:', e.message);
-      }
-    };
-
     fetchFarmer();
   }, [farmerId]);
 
@@ -92,7 +52,7 @@ export default function Sidebar({ token, setToken, isCollapsed, setIsCollapsed }
     localStorage.removeItem('krishimitraaz_farmer_state');
     if (setToken) setToken(null);
     setIsProfileOpen(false);
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   const navItems = [
@@ -305,7 +265,7 @@ export default function Sidebar({ token, setToken, isCollapsed, setIsCollapsed }
             </a>
           )}
 
-          {Boolean(token) ? (
+          {token ? (
             <button
               onClick={handleLogout}
               style={{

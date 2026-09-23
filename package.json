@@ -5,13 +5,16 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "build:frontend": "npm run build --prefix frontend && cp -r frontend/dist dist 2>/dev/null || true",
+    "start": "node server.ts",
+    "build:frontend": "npm run build --prefix frontend && node scripts/prepare-dist.js",
     "build": "npm run build:frontend",
     "dev": "node src/server.js",
     "lint": "npm run lint --prefix frontend",
     "seed": "node src/db/seed.js",
-    "test": "node --test test/engine.test.js"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest && node --test test/engine.test.js test/route-middleware.test.js",
+    "test:jest": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:vitest": "vitest run",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "workspaces": [
     "frontend"
@@ -28,11 +31,23 @@
   "dependencies": {
     "@google/genai": "^2.10.0",
     "@vitalets/google-translate-api": "^9.2.1",
+    "axios": "^1.20.0",
     "bcryptjs": "^3.0.3",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.5.2",
+    "@testing-library/react": "^16.3.3",
+    "happy-dom": "^20.14.5",
+    "jest": "^30.5.2",
+    "lucide-react": "^1.47.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vitest": "^5.0.1"
   }
 }

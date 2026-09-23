@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
-  PhoneCall, ShieldCheck, MapPin, AlertTriangle, ExternalLink, 
-  HelpCircle, CheckCircle2, Info, Headphones, Clock, Landmark, Globe, Printer
+  PhoneCall, AlertTriangle, ExternalLink, 
+  Headphones, Clock, Printer
 } from 'lucide-react';
 
 const HELPLINES = [

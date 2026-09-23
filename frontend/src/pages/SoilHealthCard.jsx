@@ -3,8 +3,8 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
-  FlaskConical, CheckCircle2, AlertTriangle, Printer, 
-  RotateCcw, Sparkles, FileText, Info, ArrowRight, ShieldCheck
+  FlaskConical, CheckCircle2, Printer, 
+  Sparkles, FileText
 } from 'lucide-react';
 
 const PRESETS = [

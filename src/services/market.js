@@ -104,6 +104,10 @@ export function generateRealisticPrices(commodity = 'wheat', stateFilter = null)
       district: m.district,
       state: m.state,
       commodity: normComm,
+      modalPrice: modal,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      arrivals: arrivals,
       modalPricePerQuintal: modal,
       minPricePerQuintal: minPrice,
       maxPricePerQuintal: maxPrice,
@@ -155,20 +159,30 @@ export async function getPrices(commodity = 'wheat', state = null) {
       if (res.ok) {
         const json = await res.json();
         if (json.records && json.records.length > 0) {
-          const records = json.records.map(r => ({
-            market: r.market || 'Regional Mandi',
-            district: r.district || '',
-            state: r.state || '',
-            commodity: normComm,
-            modalPricePerQuintal: Number(r.modal_price) || COMMODITY_MSP[normComm] || 2200,
-            minPricePerQuintal: Number(r.min_price) || Number(r.modal_price) * 0.95,
-            maxPricePerQuintal: Number(r.max_price) || Number(r.modal_price) * 1.05,
-            mspPerQuintal: COMMODITY_MSP[normComm] || 2200,
-            diffFromMsp: (Number(r.modal_price) || 2200) - (COMMODITY_MSP[normComm] || 2200),
-            arrivalsQuintals: Number(r.arrival_quantity) || 200,
-            trend: 'steady',
-            date: r.arrival_date || new Date().toISOString().slice(0, 10),
-          }));
+          const records = json.records.map(r => {
+            const modal = Number(r.modal_price) || COMMODITY_MSP[normComm] || 2200;
+            const minPrice = Number(r.min_price) || Math.round(modal * 0.95);
+            const maxPrice = Number(r.max_price) || Math.round(modal * 1.05);
+            const arrivals = Number(r.arrival_quantity) || 200;
+            return {
+              market: r.market || 'Regional Mandi',
+              district: r.district || '',
+              state: r.state || '',
+              commodity: normComm,
+              modalPrice: modal,
+              minPrice: minPrice,
+              maxPrice: maxPrice,
+              arrivals: arrivals,
+              modalPricePerQuintal: modal,
+              minPricePerQuintal: minPrice,
+              maxPricePerQuintal: maxPrice,
+              mspPerQuintal: COMMODITY_MSP[normComm] || 2200,
+              diffFromMsp: modal - (COMMODITY_MSP[normComm] || 2200),
+              arrivalsQuintals: arrivals,
+              trend: 'steady',
+              date: r.arrival_date || new Date().toISOString().slice(0, 10),
+            };
+          });
           return {
             source: 'agmarknet_live',
             commodity: normComm,
@@ -188,3 +202,5 @@ export async function getPrices(commodity = 'wheat', state = null) {
 
   return generateRealisticPrices(normComm, state);
 }
+
+export const getMandiPrices = getPrices;

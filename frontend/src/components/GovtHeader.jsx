@@ -41,7 +41,7 @@ export default function GovtHeader({ token, setToken }) {
     if (setToken) setToken(null);
     setIsFarmerMenuOpen(false);
     setIsProfileModalOpen(false);
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   const handleBrandClick = () => {
@@ -51,7 +51,7 @@ export default function GovtHeader({ token, setToken }) {
       if (location.pathname === '/login') {
         return;
       }
-      navigate('/dashboard');
+      navigate('/login');
     }
   };
 

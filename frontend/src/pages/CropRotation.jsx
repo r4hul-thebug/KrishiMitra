@@ -4,7 +4,7 @@ import { API_URL } from '../config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Repeat, Sprout, Calendar, ShieldAlert, Sparkles, 
-  TrendingUp, Award, Droplet, ArrowRight, CheckCircle2, Clock, Printer
+  TrendingUp, Award, Printer
 } from 'lucide-react';
 
 const CROPS = [
@@ -20,6 +20,7 @@ export default function CropRotation() {
   const isHi = currentLang === 'hi';
 
   const [selectedCrop, setSelectedCrop] = useState('wheat');
+  const [cropList, setCropList] = useState(CROPS);
   const [rotationData, setRotationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePlanIdx, setActivePlanIdx] = useState(0);
@@ -29,6 +30,21 @@ export default function CropRotation() {
       ? 'फसल चक्रण एवं विविधीकरण योजना - कृषिमित्राज़' 
       : 'Crop Rotation & Diversification Plan - KrishiMitraaz';
   }, [isHi]);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/crops`)
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const mapped = res.data.map(c => ({
+            id: c.id,
+            nameEn: c.name?.en || c.id,
+            nameHi: `${c.name?.hi || c.name?.en || c.id} (${c.name?.en || c.id})`
+          }));
+          setCropList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const fetchRotation = async (cropId) => {
     setLoading(true);
@@ -80,7 +96,7 @@ export default function CropRotation() {
               }}
               style={{ padding: '6px 12px', borderRadius: '3px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700, background: '#FFFFFF', color: '#0A3161' }}
             >
-              {CROPS.map(c => (
+              {cropList.map(c => (
                 <option key={c.id} value={c.id}>{isHi ? c.nameHi : c.nameEn}</option>
               ))}
             </select>
@@ -96,6 +112,13 @@ export default function CropRotation() {
           </div>
         </div>
       </div>
+
+      {loading && !rotationData && (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#64748B' }}>
+          <div className="gov-spinner" style={{ margin: '0 auto 1rem' }} />
+          <span>{isHi ? 'फसल चक्रण योजना लोड हो रही है...' : 'Loading agronomic crop rotation model...'}</span>
+        </div>
+      )}
 
       {rotationData && (
         <>

@@ -52,12 +52,16 @@ export default function ProfileModal({ isOpen, onClose, farmerData, onLogout }) 
         state: locState.trim(),
         ...(lat && lon ? { location: { lat, lon } } : {})
       };
-      await axios.patch(`${API_URL}/farmers/${farmerData.id}`, patchData);
-      farmerData.village = locVillage;
-      farmerData.state = locState;
-      if (lat && lon) farmerData.location = { lat, lon };
-      farmerData.locationStr = [locVillage, locState].filter(Boolean).join(', ');
+      const res = await axios.patch(`${API_URL}/farmers/${farmerData.id}`, patchData);
+      const updatedFarmer = res.data?.farmer || {
+        ...farmerData,
+        village: locVillage,
+        state: locState,
+        ...(lat && lon ? { location: { lat, lon } } : {}),
+        locationStr: [locVillage, locState].filter(Boolean).join(', ')
+      };
       if (locState) localStorage.setItem('krishimitraaz_farmer_state', locState);
+      window.dispatchEvent(new CustomEvent('farmer_updated', { detail: updatedFarmer }));
       setLocMsg(isHi ? 'स्थान सफलतापूर्वक सुरक्षित किया गया!' : 'Location updated successfully!');
       setTimeout(() => {
         setShowLocationEdit(false);

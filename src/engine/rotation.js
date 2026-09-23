@@ -156,6 +156,76 @@ export const ROTATION_KNOWLEDGE = {
       { month: 'Apr-May', task: 'Summer Moong sowing', season: 'Zaid' },
       { month: 'July-Sept', task: 'Kharif Bajra or Soybean', season: 'Kharif' }
     ]
+  },
+  soybean: {
+    name: 'Soybean (सोयाबीन)',
+    family: 'Fabaceae (Leguminosae)',
+    season: 'Kharif (Jun - Oct)',
+    rootDepth: 'Medium taproot (60-90 cm)',
+    nutrientDemand: 'High Phosphorus & Rhizobium inoculation',
+    recommendedRotations: [
+      {
+        planName: 'Soybean-Wheat Legume Enrichment Cycle',
+        cycle: ['Soybean (Kharif)', 'Wheat (Rabi)', 'Summer Moong / Sesame (Zaid)'],
+        nitrogenFixedKgPerHa: 45,
+        organicCarbonImpact: '+25% soil nitrogen pool',
+        pestReductionRating: 'High (Interrupts cereal root rot & rusts)',
+        incomeBoostPct: '+26%',
+        description: 'Soybean naturally enriches soil with nodule bacteria, providing residual nitrogen for succeeding wheat crops.'
+      }
+    ],
+    timeline: [
+      { month: 'Jun-Jul', task: 'Sow Soybean with Bradyrhizobium seed inoculation', season: 'Kharif' },
+      { month: 'Aug-Sep', task: 'Intercultural weeding and pod borer monitoring', season: 'Kharif' },
+      { month: 'Oct', task: 'Harvest at 14% seed moisture, shred crop residues into soil', season: 'Kharif' },
+      { month: 'Nov-Apr', task: 'Zero-tillage sowing of Wheat', season: 'Rabi' }
+    ]
+  },
+  chickpea: {
+    name: 'Chickpea / Gram (चना)',
+    family: 'Fabaceae',
+    season: 'Rabi (Oct - Mar)',
+    rootDepth: 'Deep taproot (90-120 cm)',
+    nutrientDemand: 'Phosphorus and moisture-sensitive',
+    recommendedRotations: [
+      {
+        planName: 'Rainfed Cereal-Pulse Rotation',
+        cycle: ['Pearl Millet / Sorghum (Kharif)', 'Chickpea (Rabi)', 'Green Fodder (Zaid)'],
+        nitrogenFixedKgPerHa: 40,
+        organicCarbonImpact: '+20% microbial biomass',
+        pestReductionRating: 'Very High (Breaks monocot rust and smut cycles)',
+        incomeBoostPct: '+21%',
+        description: 'Deep taproot mines subsoil moisture efficiently, rejuvenating drought-prone soils.'
+      }
+    ],
+    timeline: [
+      { month: 'Oct-Nov', task: 'Deep ploughing & Sowing of Chickpea with Trichoderma treatment', season: 'Rabi' },
+      { month: 'Dec-Jan', task: 'Nipping of apical shoots to encourage branching, pod borer traps', season: 'Rabi' },
+      { month: 'Feb-Mar', task: 'Harvesting when plants turn yellowish-brown', season: 'Rabi' }
+    ]
+  },
+  potato: {
+    name: 'Potato (आलू)',
+    family: 'Solanaceae',
+    season: 'Rabi (Oct - Feb)',
+    rootDepth: 'Shallow root system (30-50 cm)',
+    nutrientDemand: 'Heavy Potassium, Phosphorus & Nitrogen feeder',
+    recommendedRotations: [
+      {
+        planName: 'Potato-Maize-Sesbania Green Manuring',
+        cycle: ['Dhaincha / Sesbania Green Manure (Summer)', 'Potato (Rabi)', 'Spring Maize / Sunflower (Zaid)'],
+        nitrogenFixedKgPerHa: 30,
+        organicCarbonImpact: '+30% soil organic matter',
+        pestReductionRating: 'High (Breaks bacterial wilt and tuber moth)',
+        incomeBoostPct: '+35%',
+        description: 'Green manuring with Sesbania prior to potato planting restores massive organic matter required for tuber expansion.'
+      }
+    ],
+    timeline: [
+      { month: 'Oct-Nov', task: 'Tubers treated with Mancozeb, ridging and planting', season: 'Rabi' },
+      { month: 'Dec-Jan', task: 'Earthing up and late blight preventive spraying', season: 'Rabi' },
+      { month: 'Feb', task: 'Dehaulming (cutting foliage) 10 days before harvesting', season: 'Rabi' }
+    ]
   }
 };
 

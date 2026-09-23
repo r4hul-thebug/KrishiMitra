@@ -30,8 +30,8 @@ export default function YieldCalculator() {
       try {
         const res = await axios.get(`${API_URL}/crops`);
         setCropsList(res.data);
-        if (res.data.length > 0 && !selectedCropId) {
-          setSelectedCropId(res.data[0].id);
+        if (res.data.length > 0) {
+          setSelectedCropId(prev => prev || res.data[0].id);
         }
       } catch {
         console.error('Failed to load crop list.');
@@ -47,8 +47,8 @@ export default function YieldCalculator() {
           if (res.data?.yieldHistory) {
             setFarmerYieldHistory(res.data.yieldHistory);
           }
-          if (res.data?.crop && !selectedCropId) {
-            setSelectedCropId(res.data.crop);
+          if (res.data?.crop) {
+            setSelectedCropId(prev => prev || res.data.crop);
           }
           if (res.data?.landAcres) {
             setAcreage(res.data.landAcres);

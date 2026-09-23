@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
-  Stethoscope, ShieldAlert, Upload, 
-  CheckCircle2, AlertTriangle, Calculator, FileText, 
-  Leaf, Droplet, ArrowRight, RefreshCw, Zap, Printer
+  Stethoscope, Upload, Calculator, FileText, 
+  Leaf, RefreshCw, Zap, Printer
 } from 'lucide-react';
 
 const CROPS = [
@@ -22,6 +21,7 @@ export default function CropDoctor() {
 
   const [activeTab, setActiveTab] = useState('symptoms'); // 'symptoms' | 'camera' | 'fertilizer'
   const [selectedCrop, setSelectedCrop] = useState('wheat');
+  const [cropsList, setCropsList] = useState(CROPS);
   const [symptomInput, setSymptomInput] = useState('');
   const [diagnosisResult, setDiagnosisResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,6 @@ export default function CropDoctor() {
   // Fertilizer calculator state
   const [fertilizerAcres, setFertilizerAcres] = useState(2.0);
   const [fertilizerResult, setFertilizerResult] = useState(null);
-  const [fertLoading, setFertLoading] = useState(false);
 
   // Camera / photo upload simulation
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -41,8 +40,23 @@ export default function CropDoctor() {
       : 'Crop Disease Diagnostics & Treatment - KrishiMitraaz';
   }, [isHi]);
 
+  useEffect(() => {
+    axios.get(`${API_URL}/crops`)
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const mapped = res.data.map(c => ({
+            id: c.id,
+            nameEn: c.name?.en || c.id,
+            nameHi: `${c.name?.hi || c.name?.en || c.id} (${c.name?.en || c.id})`
+          }));
+          setCropsList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Run symptom check
-  const handleDiagnose = async (overrideKeywords = null) => {
+  const handleDiagnose = useCallback(async (overrideKeywords = null) => {
     setLoading(true);
     try {
       const keywords = overrideKeywords !== null ? overrideKeywords : symptomInput;
@@ -53,25 +67,22 @@ export default function CropDoctor() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCrop, symptomInput]);
 
   // Run fertilizer calculation
-  const handleCalcDose = async (acres = fertilizerAcres, crop = selectedCrop) => {
-    setFertLoading(true);
+  const handleCalcDose = useCallback(async (acres = fertilizerAcres, crop = selectedCrop) => {
     try {
       const res = await axios.get(`${API_URL}/fertilizer/dose?crop=${crop}&acres=${acres}`);
       setFertilizerResult(res.data);
     } catch (err) {
       console.error('Fertilizer calculation failed:', err);
-    } finally {
-      setFertLoading(false);
     }
-  };
+  }, [fertilizerAcres, selectedCrop]);
 
   useEffect(() => {
     handleDiagnose('');
     handleCalcDose(fertilizerAcres, selectedCrop);
-  }, [selectedCrop]);
+  }, [selectedCrop, handleDiagnose, handleCalcDose, fertilizerAcres]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
@@ -115,7 +126,7 @@ export default function CropDoctor() {
               onChange={(e) => setSelectedCrop(e.target.value)}
               style={{ padding: '6px 12px', borderRadius: '3px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700, background: '#FFFFFF', color: '#0A3161' }}
             >
-              {CROPS.map(c => (
+              {cropsList.map(c => (
                 <option key={c.id} value={c.id}>{isHi ? c.nameHi : c.nameEn}</option>
               ))}
             </select>

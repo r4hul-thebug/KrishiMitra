@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { User, Lock, ArrowRight, Map, Calendar, TrendingUp, Plus, Eye, EyeOff, Globe, ShieldCheck } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { User, Lock, ArrowRight, Map, Calendar, TrendingUp, Plus, Eye, EyeOff, Globe, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { API_URL } from '../config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getStateLanguage } from '../utils/languageDetector';
@@ -10,9 +10,11 @@ import Logo from '../components/Logo';
 
 const AUTH_URL = `${API_URL}/auth`;
 
-export default function AuthScreen({ setToken }) {
+export default function AuthScreen({ token, setToken }) {
   const { currentLang, setCurrentLang, setDetectedLocalLang, t } = useLanguage();
   const isHi = currentLang === 'hi';
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
   const [officialId, setOfficialId] = useState('');
@@ -100,7 +102,6 @@ export default function AuthScreen({ setToken }) {
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = isLogin 
@@ -162,12 +163,13 @@ export default function AuthScreen({ setToken }) {
 
       const res = await axios.post(`${AUTH_URL}${endpoint}`, payload);
       
-      const { token, farmer } = res.data;
-      localStorage.setItem('krishimitraaz_token', token);
+      const { token: receivedToken, farmer } = res.data;
+      localStorage.setItem('krishimitraaz_token', receivedToken);
       localStorage.setItem('krishimitraaz_farmer_id', farmer.id);
       
-      setToken(token);
-      navigate('/dashboard', { replace: true });
+      setToken(receivedToken);
+      const destination = location.state?.from || '/dashboard';
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || err.message || (isHi ? 'सत्यापन विफल रहा। विवरण जांचें।' : 'Authentication failed. Please verify credentials.'));
     } finally {
@@ -212,7 +214,59 @@ export default function AuthScreen({ setToken }) {
         </div>
 
         <div className="gov-card-body" style={{ padding: '1.5rem' }}>
-          {isLogin && (
+          {token && (
+            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '4px', padding: '12px 14px', marginBottom: '1.25rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#15803D', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <ShieldCheck size={16} color="#15803D" />
+                <span>{isHi ? 'सक्रिय सत्र उपलब्ध है' : 'Active Farmer Session Detected'}</span>
+              </div>
+              <p style={{ fontSize: '0.78rem', color: '#166534', margin: '0 0 10px 0' }}>
+                {isHi 
+                  ? 'आप वर्तमान में KrishiMitraaz पोर्टल में लॉगिन हैं।' 
+                  : 'You are currently authenticated in KrishiMitraaz.'}
+              </p>
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate(location.state?.from || '/dashboard')}
+                  className="gov-btn gov-btn-primary"
+                  style={{ padding: '6px 14px', fontSize: '0.78rem' }}
+                >
+                  {isHi ? 'डैशबोर्ड पर आगे बढ़ें →' : 'Continue to Dashboard →'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.history.length > 1) {
+                      navigate(-1);
+                    } else {
+                      navigate('/dashboard');
+                    }
+                  }}
+                  className="gov-btn gov-btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <ArrowLeft size={13} />
+                  <span>{isHi ? 'पीछे जाएं' : 'Go Back'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('krishimitraaz_token');
+                    localStorage.removeItem('krishimitraaz_farmer_id');
+                    localStorage.removeItem('krishimitraaz_farmer_state');
+                    setToken(null);
+                  }}
+                  className="gov-btn"
+                  style={{ padding: '6px 10px', fontSize: '0.75rem', background: '#F1F5F9', border: '1px solid #CBD5E1', color: '#475569' }}
+                >
+                  {isHi ? 'खाता बदलें' : 'Switch Account'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isLogin && !token && (
             <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '3px', padding: '8px 12px', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ textAlign: 'left', fontSize: '0.78rem', color: '#0A3161' }}>
                 <strong>{isHi ? 'डेमो किसान प्रोफ़ाइल:' : 'Demo Profile:'}</strong> FARMER-001 / password123
@@ -453,7 +507,8 @@ export default function AuthScreen({ setToken }) {
                   localStorage.setItem('krishimitraaz_token', 'krishimitraaz_demo_token');
                   localStorage.setItem('krishimitraaz_farmer_id', 'demo-farmer-001');
                   setToken('krishimitraaz_demo_token');
-                  navigate('/dashboard', { replace: true });
+                  const destination = location.state?.from || '/dashboard';
+                  navigate(destination, { replace: true });
                 }}
                 className="gov-btn gov-btn-secondary"
                 style={{ width: '100%', padding: '8px', fontSize: '0.82rem', justifyContent: 'center', borderColor: '#004D25', color: '#004D25' }}

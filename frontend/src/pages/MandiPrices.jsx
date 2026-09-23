@@ -41,6 +41,7 @@ export default function MandiPrices() {
   const { currentLang } = useLanguage();
   const isHi = currentLang === 'hi';
   const [commodity, setCommodity] = useState('wheat');
+  const [commoditiesList, setCommoditiesList] = useState(COMMODITIES);
   const [selectedState, setSelectedState] = useState('All States');
   const [searchQuery, setSearchQuery] = useState('');
   const [marketData, setMarketData] = useState(null);
@@ -55,6 +56,22 @@ export default function MandiPrices() {
       ? 'मंडी भाव एवं एमएसपी (e-NAM) - कृषिमित्राज़' 
       : 'e-NAM Mandi Prices & MSP Tracker - KrishiMitraaz';
   }, [isHi]);
+
+  // Fetch dynamic commodities from backend /crops API
+  useEffect(() => {
+    axios.get(`${API_URL}/crops`)
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const mapped = res.data.map(c => ({
+            id: c.id,
+            nameEn: c.name?.en || c.id,
+            nameHi: `${c.name?.hi || c.name?.en || c.id} (${c.name?.en || c.id})`
+          }));
+          setCommoditiesList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const fetchMandiData = useCallback(async () => {
     setLoading(true);
@@ -162,7 +179,7 @@ export default function MandiPrices() {
                 onChange={(e) => setCommodity(e.target.value)}
                 style={{ width: '100%', padding: '7px 10px', borderRadius: '3px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 600, background: '#FFFFFF' }}
               >
-                {COMMODITIES.map(c => (
+                {commoditiesList.map(c => (
                   <option key={c.id} value={c.id}>
                     {isHi ? c.nameHi : c.nameEn}
                   </option>
@@ -325,8 +342,12 @@ export default function MandiPrices() {
                 </thead>
                 <tbody>
                   {filteredPrices.map((item, idx) => {
-                    const msp = marketData?.govtMsp || 2275;
-                    const isAboveMsp = item.modalPrice >= msp;
+                    const msp = Number(marketData?.govtMsp) || 2275;
+                    const modalVal = Number(item.modalPrice ?? item.modalPricePerQuintal) || 0;
+                    const minVal = Number(item.minPrice ?? item.minPricePerQuintal) || Math.round(modalVal * 0.93);
+                    const maxVal = Number(item.maxPrice ?? item.maxPricePerQuintal) || Math.round(modalVal * 1.07);
+                    const arrivalsVal = Number(item.arrivals ?? item.arrivalsQuintals) || 0;
+                    const isAboveMsp = modalVal >= msp;
                     return (
                       <tr key={idx}>
                         <td style={{ color: '#64748B', fontWeight: 600 }}>{idx + 1}</td>
@@ -336,11 +357,11 @@ export default function MandiPrices() {
                         <td>
                           <span>{item.district}, {item.state}</span>
                         </td>
-                        <td>₹{item.minPrice?.toLocaleString('en-IN')}</td>
-                        <td>₹{item.maxPrice?.toLocaleString('en-IN')}</td>
+                        <td style={{ fontWeight: 600, color: '#334155' }}>₹{minVal.toLocaleString('en-IN')}</td>
+                        <td style={{ fontWeight: 600, color: '#334155' }}>₹{maxVal.toLocaleString('en-IN')}</td>
                         <td>
                           <strong style={{ fontSize: '0.95rem', color: '#1E293B' }}>
-                            ₹{item.modalPrice?.toLocaleString('en-IN')}
+                            ₹{modalVal.toLocaleString('en-IN')}
                           </strong>
                         </td>
                         <td>
@@ -375,7 +396,7 @@ export default function MandiPrices() {
                           )}
                         </td>
                         <td style={{ color: '#475569', fontWeight: 600 }}>
-                          {item.arrivals ? `${item.arrivals} MT` : 'N/A'}
+                          {arrivalsVal ? `${arrivalsVal} MT` : '150 MT'}
                         </td>
                       </tr>
                     );

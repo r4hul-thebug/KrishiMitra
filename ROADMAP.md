@@ -13,18 +13,21 @@ Every scope decision below serves *that* person: **reach + trust** over feature 
 |---|---|---|
 | Professional Government Dashboard | ✅ Done | NIC-style solid theme, high-contrast, accessible |
 | Secure JWT Authentication | ✅ Done | PM Kisan / Aadhaar Official ID based login |
-| AI Advisory Engine | ✅ Done | Weather-aware, stage-specific, explainable |
-| Voice-ready Summaries | ✅ Done | `toSpeech()` seam for Bhashini TTS |
+| AI Advisory Engine | ✅ Done | Weather-aware, stage-specific, explainable across 39 crops |
+| Voice-ready Summaries | ✅ Done | `toSpeech()` seam for regional TTS engines |
 | Multi-Year Yield History | ✅ Done | Track harvests across seasons |
 | Financial Yield Calculator | ✅ Done | MSP, cost, revenue, profit per acre |
 | Crop Suitability Engine | ✅ Done | Location-based weather-matched recommendations |
-| AI Chatbot | ✅ Done | Grounded agricultural assistant |
+| AI Chatbot (Gemini) | ✅ Done | Grounded agricultural assistant with leaf photo upload |
 | Precision Geolocation | ✅ Done | GPS + Nominatim reverse geocoding |
-| NDVI Satellite Integration | ✅ Done | Mock-ready for ISRO Bhuvan API |
-| Bhashini STT/TTS | 🔜 Phase 2 | Voice I/O for 22 Indian languages |
-| LLM RAG Chatbot | 🔜 Phase 2 | Grounded on engine output, not raw LLM |
-| Disease Detection CNN | 📋 Phase 3 | Image-based crop disease triage |
-| Mandi Prices UI | 📋 Phase 3 | Real-time market prices (Agmarknet/eNAM) |
+| NDVI Satellite Integration | ✅ Done | Integrated with ISRO Bhuvan & Sentinel-2 models |
+| Disease Detection Clinic | ✅ Done | Triage for foliar pathogens + CPCB chemical/bio protocols |
+| Mandi Prices & MSP Benchmark | ✅ Done | Real-time APMC mandi auction trends & comparisons |
+| Central & State DBT Schemes | ✅ Done | PM-KISAN, PMFBY, KUSUM, KCC directory & eligibility |
+| Crop Rotation Calendar | ✅ Done | Kharif-Rabi-Zaid nitrogen fixing sequences |
+| Digital Soil Health Card | ✅ Done | 12-parameter chemical analysis & organic carbon |
+| National Kisan Helpline | ✅ Done | 24x7 toll-free directory & disaster relief SOPs |
+| Bhashini STT/TTS Live Stream | 🔜 Phase 4 | Full duplex voice stream for 22 languages |
 | IVR / WhatsApp Channel | 📋 Phase 4 | Feature phone accessibility |
 | Offline-first Caching | 📋 Phase 4 | Cached advisory + SMS fallback |
 

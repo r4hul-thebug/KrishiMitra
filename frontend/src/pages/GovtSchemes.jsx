@@ -3,8 +3,7 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
-  Landmark, ShieldCheck, ExternalLink, FileText, 
-  CheckCircle2, Search, Sparkles,
+  Landmark, ExternalLink, Search, Sparkles,
   ChevronDown, ChevronUp, Printer, AlertCircle, MapPin
 } from 'lucide-react';
 
